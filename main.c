@@ -1,4 +1,3 @@
-#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -10,6 +9,7 @@ typedef enum {
     MINUS,
     MULTIPLY,
     DIVIDE,
+    ILLEGAL,
 } TokenType;
 
 typedef struct {
@@ -18,33 +18,38 @@ typedef struct {
 } Token;
 
 void parse(Token **tokensBuf, char *string, int stringSize) {
+    if (stringSize == 0) {
+        return;
+    }
+
     int i = 0;
-    if (stringSize)
     while (i < strlen(string)) {
         Token *currentToken = malloc(sizeof(Token));
-        if (string[i] == 0) {
-            break;
-        }
+        char *currentValue = malloc(2 * sizeof(char));
+        sprintf(currentValue, "%c", string[i]);
+
         switch (string[i]) {
             case '+':
-                currentToken->value = "+";
+                currentToken->value = currentValue;
                 currentToken->type = PLUS;
                 break;
             case '-':
-                currentToken->value = "-";
+                currentToken->value = currentValue;
                 currentToken->type = MINUS;
                 break;
             case '*':
             case 'x':
             case 'X':
-                currentToken->value = "*";
+                currentToken->value = currentValue;
                 currentToken->type = MULTIPLY;
                 break;
             case '/':
-                currentToken->value = "/";
+                currentToken->value = currentValue;
                 currentToken->type = DIVIDE;
-            default:
                 break;
+            default:
+                currentToken->value = currentValue;
+                currentToken->type = ILLEGAL;
         }
         tokensBuf[i] = currentToken;
         i++;
@@ -81,18 +86,22 @@ int main() {
     parse(tokensBuf, input, strlen(input));
 
     for (int i = 0; i < sizeof(tokensBuf) / sizeof(tokensBuf[0]); i++) {
+        printf("%s ", tokensBuf[i]->value);
         switch (tokensBuf[i]->type) {
             case PLUS:
-                printf("PLUS ");
+                printf("PLUS");
                 break;
             case MINUS:
-                printf("MINUS ");
+                printf("MINUS");
                 break;
             case MULTIPLY:
-                printf("MULTIPLY ");
+                printf("MULTIPLY");
                 break;
             case DIVIDE:
-                printf("DIVIDE ");
+                printf("DIVIDE");
+                break;
+            case ILLEGAL:
+                printf("ILLEGAL");
                 break;
             default:
                 break;
