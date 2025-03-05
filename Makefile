@@ -1,5 +1,5 @@
 CC = clang
-ARGS = -Wall -Werror
+ARGS = -std=c99 -Wall -Werror -Wno-unused-parameter
 PROGRAM = main
 
 out:
