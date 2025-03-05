@@ -33,12 +33,14 @@ void parse(Token **tokensBuf, char *string, int stringSize) {
     bool seenDot = false;
     bool invalidNumber = false;
     while (i < strlen(string)) {
+        printf("i: %i\n", i);
         Token *currentToken = malloc(sizeof(Token));
         if (isdigit(string[i])) {
             if (isCurrentlyNumber) {
                 numberLength++;
             } else {
                 isCurrentlyNumber = true;
+                numberLength++;
                 startNumber = i;
             }
 
@@ -61,12 +63,15 @@ void parse(Token **tokensBuf, char *string, int stringSize) {
             }
         }
 
-
         if (isCurrentlyNumber || invalidNumber) {
             // We either got the entire number or it's invalid
             currentToken->value = malloc((numberLength + 2) * sizeof(char));
             strncpy(currentToken->value, string + startNumber, numberLength);
-            currentToken->type = NUMBER;
+            if (invalidNumber) {
+                currentToken->type = INVALID_NUMBER;
+            } else {
+                currentToken->type = NUMBER;
+            }
 
             startNumber = 0;
             numberLength = 0;
