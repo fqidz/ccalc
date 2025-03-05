@@ -19,30 +19,34 @@ typedef struct {
 
 void parse(Token **tokensBuf, char *string, int stringSize) {
     int i = 0;
-    int tokensBufIndex = 0;
+    if (stringSize)
     while (i < strlen(string)) {
         Token *currentToken = malloc(sizeof(Token));
         if (string[i] == 0) {
             break;
-        } else if (string[i] == '+') {
-            currentToken->value = "+";
-            currentToken->type = PLUS;
-            tokensBuf[tokensBufIndex] = currentToken;
-        } else if (string[i] == '+') {
-            currentToken->value = "+";
-            currentToken->type = PLUS;
-            tokensBuf[tokensBufIndex] = currentToken;
         }
-        // bool seenDot = false;
-        // char *current_token = malloc((stringSize + 1) * sizeof(char));
-        // if (current_token == NULL) {
-        //     // TODO: Handle error
-        // }
-        // int j = 0;
-        // while((isdigit(string[i]) || string[i] == '.') && !seenDot) {
-        //     current_token[j] = string[i];
-        //     j++;
-        // }
+        switch (string[i]) {
+            case '+':
+                currentToken->value = "+";
+                currentToken->type = PLUS;
+                break;
+            case '-':
+                currentToken->value = "-";
+                currentToken->type = MINUS;
+                break;
+            case '*':
+            case 'x':
+            case 'X':
+                currentToken->value = "*";
+                currentToken->type = MULTIPLY;
+                break;
+            case '/':
+                currentToken->value = "/";
+                currentToken->type = DIVIDE;
+            default:
+                break;
+        }
+        tokensBuf[i] = currentToken;
         i++;
     }
 }
@@ -61,6 +65,7 @@ void parse(Token **tokensBuf, char *string, int stringSize) {
 //
 
 void tests() {
+    printf("Running Tests\n");
 }
 
 int main() {
@@ -70,7 +75,32 @@ int main() {
     printf("Input: ");
     // TODO: handle null
     (void) fgets(input, sizeof(input) / sizeof(input[0]), stdin);
-
     input[strcspn(input, "\n")] = 0;
+
+    Token *tokensBuf[strlen(input)];
+    parse(tokensBuf, input, strlen(input));
+
+    for (int i = 0; i < sizeof(tokensBuf) / sizeof(tokensBuf[0]); i++) {
+        switch (tokensBuf[i]->type) {
+            case PLUS:
+                printf("PLUS ");
+                break;
+            case MINUS:
+                printf("MINUS ");
+                break;
+            case MULTIPLY:
+                printf("MULTIPLY ");
+                break;
+            case DIVIDE:
+                printf("DIVIDE ");
+                break;
+            default:
+                break;
+        }
+        printf("\n");
+    }
+
+
+    return 0;
 }
 
