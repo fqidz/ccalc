@@ -27,92 +27,78 @@ void parse(Token **tokensBuf, char *string, int stringSize) {
     }
 
     int i = 0;
+    int currentTokenIndex = 0;
     int startNumber = 0;
-    int numberLength = 0;
-    bool isCurrentlyNumber = false;
-    bool seenDot = false;
-    bool invalidNumber = false;
     while (i < strlen(string)) {
-        printf("i: %i\n", i);
+        // printf("i: %i\n", i);
         Token *currentToken = malloc(sizeof(Token));
-        if (isdigit(string[i])) {
-            if (isCurrentlyNumber) {
-                numberLength++;
-            } else {
-                isCurrentlyNumber = true;
-                numberLength++;
-                startNumber = i;
-            }
-
-            i++;
-            continue;
-        }
-
-        printf("number length: %i\n", numberLength);
-
-        if (string[i] == '.') {
-            if (seenDot) {
-                numberLength++;
-                invalidNumber = true;
-            } else {
-                seenDot = true;
-                numberLength++;
-
-                i++;
-                continue;
-            }
-        }
-
-        if (isCurrentlyNumber || invalidNumber) {
-            // We either got the entire number or it's invalid
-            currentToken->value = malloc((numberLength + 2) * sizeof(char));
-            strncpy(currentToken->value, string + startNumber, numberLength);
-            if (invalidNumber) {
-                currentToken->type = INVALID_NUMBER;
-            } else {
-                currentToken->type = NUMBER;
-            }
-
-            startNumber = 0;
-            numberLength = 0;
-            isCurrentlyNumber = false;
-            seenDot = false;
-            invalidNumber = false;
-
-            i++;
-            continue;
-        }
-
-        currentToken->value = malloc(2 * sizeof(char));
-        sprintf(currentToken->value, "%c", string[i]);
-
         switch (string[i]) {
             case '+':
+                currentToken->value = "+";
                 currentToken->type = PLUS;
                 break;
             case '-':
+                currentToken->value = "-";
                 currentToken->type = MINUS;
                 break;
             case '*':
             case 'x':
             case 'X':
+                currentToken->value = "*";
                 currentToken->type = MULTIPLY;
                 break;
             case '/':
+                currentToken->value = "/";
                 currentToken->type = DIVIDE;
                 break;
             case '(':
+                currentToken->value = "(";
                 currentToken->type = LEFT_PAREN;
                 break;
             case ')':
+                currentToken->value = ")";
                 currentToken->type = RIGHT_PAREN;
                 break;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '0':
+                if (
+                    i + 1 < strlen(string) && (
+                        isdigit(string[i + 1]) ||
+                        string[i + 1] == '.'
+                    )
+                ) {
+                    startNumber = i;
+                } else {
+
+                }
+                currentToken->value = malloc(2 * sizeof(char));
+                sprintf(currentToken->value, "%c", string[i]);
+
+                currentToken->type = NUMBER;
+                break;
             default:
+                currentToken->value = malloc(2 * sizeof(char));
+                sprintf(currentToken->value, "%c", string[i]);
+
                 currentToken->type = INVALID;
         }
-        tokensBuf[i] = currentToken;
+        tokensBuf[currentTokenIndex] = currentToken;
+        currentTokenIndex++;
         i++;
     }
+}
+
+void expandString(char *string) {
+    char *buffer = realloc(string, strlen(string) * 2 + 1);
+    string = buffer;
 }
 // 1.29+3
 // check 0;
@@ -147,6 +133,9 @@ int main() {
     for (int i = 0; i < sizeof(tokensBuf) / sizeof(tokensBuf[0]); i++) {
         printf("%s ", tokensBuf[i]->value);
         switch (tokensBuf[i]->type) {
+            case NUMBER:
+                printf("NUMBER");
+                break;
             case PLUS:
                 printf("PLUS");
                 break;
@@ -172,11 +161,16 @@ int main() {
                 printf("INVALID_NUMBER");
                 break;
             default:
+                printf("TOKEN NOT FOUND");
                 break;
         }
         printf("\n");
     }
 
+    for (int i = 0; i < sizeof(tokensBuf) / sizeof(tokensBuf[0]); i++) {
+        free(tokensBuf[i]->value);
+        free(tokensBuf[i]);
+    }
 
     return 0;
 }
