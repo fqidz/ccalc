@@ -89,16 +89,19 @@ void input_init(InputStream *input, const char *string) {
     input->pos = 0;
 }
 
+bool input_is_eof(InputStream *input) {
+    assert(input->pos <= input->length);
+    return (input->pos == input->length);
+}
+
 char input_next(InputStream *input) {
+    assert(!input_is_eof(input));
     return input->string[input->pos++];
 }
 
 char input_peek(InputStream *input) {
+    assert(!input_is_eof(input));
     return input->string[input->pos];
-}
-
-bool input_is_eof(InputStream *input) {
-    return (input->pos >= input->length);
 }
 
 bool is_symbol(char c) {
@@ -116,6 +119,8 @@ bool is_symbol(char c) {
 }
 
 Token input_read_symbol(InputStream *input) {
+    assert(!input_is_eof(input));
+    assert(is_symbol(input_peek(input)));
     Token token = {0};
     switch (input_next(input)) {
         case '+':
@@ -137,6 +142,10 @@ Token input_read_symbol(InputStream *input) {
     }
 }
 
+Token input_read_digit(InputStream *input) {
+    assert(!input_is_eof(input));
+    assert(isdigit(input_peek(input)) || input_peek(input) == '.');
+}
 
 bool input_parse(TokenArr *tokens, InputStream *input) {
 
