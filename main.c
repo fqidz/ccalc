@@ -101,15 +101,37 @@ bool input_is_eof(InputStream *input) {
     return (input->pos >= input->length);
 }
 
+bool is_symbol(char c) {
+    switch (c) {
+        case '+':
+        case '-':
+        case '*':
+        case 'x':
+        case 'X':
+        case '/':
+            return true;
+        default:
+            return false;
+    }
+}
+
 Token input_read_symbol(InputStream *input) {
     Token token = {0};
-    char current_char = input_next(input);
-    token.value = malloc(2 * sizeof(char));
-    switch (current_char) {
+    switch (input_next(input)) {
         case '+':
+            token.value = "+";
             token.type = PLUS;
         case '-':
+            token.value = "-";
             token.type = MINUS;
+        case '*':
+        case 'x':
+        case 'X':
+            token.value = "*";
+            token.type = MULTIPLY;
+        case '/':
+            token.value = "/";
+            token.type = DIVIDE;
         default:
             exit(1);
     }
@@ -192,20 +214,39 @@ void test_input_with_whitespace(void) {
     assert(input_is_eof(&input_stream));
 }
 
-bool test_all(void) {
+void test_input_is_symbol(void) {
+    char *string = "+-*xX/";
+    InputStream input_stream = {0};
+    input_init(&input_stream, string);
+
+    while (!input_is_eof(&input_stream)) {
+        assert(is_symbol(input_next(&input_stream)));
+    }
+
+    string = "+-*;xX/";
+    input_free(&input_stream);
+    input_init(&input_stream, string);
+    assert(is_symbol(input_next(&input_stream)));
+    assert(is_symbol(input_next(&input_stream)));
+    assert(is_symbol(input_next(&input_stream)));
+    assert(!is_symbol(input_next(&input_stream)));
+    assert(is_symbol(input_next(&input_stream)));
+    assert(is_symbol(input_next(&input_stream)));
+    assert(is_symbol(input_next(&input_stream)));
+}
+
+
+void test_all(void) {
     test_string_remove_all_whitespace();
     test_input_next();
     test_input_peek();
     test_input_is_eof();
     test_input_with_whitespace();
-    return true;
+    test_input_is_symbol();
 }
 
 int main(void) {
-    if (!test_all()) {
-        printf("Tests Failed");
-        return 1;
-    }
+    test_all();
 
     char input_string[20];
 
