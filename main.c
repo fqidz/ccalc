@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
@@ -22,30 +23,8 @@ typedef struct {
 typedef struct {
     Token *items;
     size_t length;
-    size_t pos;
+    size_t item_end_pos;
 } TokenArr;
-
-void tokenarr_append(TokenArr *tokenarr, Token item) {
-    if (!tokenarr->items) {
-        tokenarr->length = 2;
-        tokenarr->pos = 0;
-        tokenarr->items = malloc(tokenarr->length * sizeof(Token));
-    }
-
-    if (tokenarr->pos >= tokenarr->length) {
-        tokenarr->length *= 2;
-        tokenarr->items = realloc(tokenarr->items, tokenarr->length * sizeof(Token));
-    }
-
-    tokenarr->items[tokenarr->pos++] = item;
-}
-
-void tokenarr_free(TokenArr *tokenarr) {
-    free(tokenarr->items);
-    tokenarr->items = NULL;
-    tokenarr->length = 0;
-    tokenarr-> pos = 0;
-}
 
 typedef struct {
     char *string;
@@ -53,19 +32,60 @@ typedef struct {
     size_t pos;
 } InputStream;
 
-void string_remove_all_whitespace(char* s) {
-    char* d = s;
-    do {
-        while (*d == ' ') {
-            ++d;
-        }
-    } while ((*s++ = *d++));
+void token_free(Token *token) {
+    free(token->value);
 }
 
-void input_init(InputStream *input, char *string) {
-    string_remove_all_whitespace(string);
-    input->string = string;
-    input->length = strlen(string);
+void tokenarr_append(TokenArr *tokenarr, Token item) {
+    if (!tokenarr->items) {
+        tokenarr->length = 2;
+        tokenarr->item_end_pos = 0;
+        tokenarr->items = malloc(tokenarr->length * sizeof(Token));
+    }
+
+    if (tokenarr->item_end_pos >= tokenarr->length) {
+        tokenarr->length *= 2;
+        tokenarr->items = realloc(tokenarr->items, tokenarr->length * sizeof(Token));
+    }
+
+    tokenarr->items[tokenarr->item_end_pos++] = item;
+}
+
+void tokenarr_free(TokenArr *tokenarr) {
+    for (int i = 0; i <= tokenarr->item_end_pos; i++) {
+        token_free(&tokenarr->items[i]);
+    }
+    free(tokenarr->items);
+    tokenarr->items = NULL;
+    tokenarr->length = 0;
+    tokenarr->item_end_pos = 0;
+}
+
+void string_remove_spaces (char* restrict str_trimmed, const char* restrict str_untrimmed)
+{
+  while (*str_untrimmed != '\0')
+  {
+    if(!isspace(*str_untrimmed))
+    {
+      *str_trimmed = *str_untrimmed;
+      str_trimmed++;
+    }
+    str_untrimmed++;
+  }
+  *str_trimmed = '\0';
+}
+
+void input_free(InputStream *input) {
+    free(input->string);
+    input->length = 0;
+    input->pos = 0;
+}
+
+void input_init(InputStream *input, const char *string) {
+    char *trimmed_string = malloc(strlen(string) * sizeof(char));
+    string_remove_spaces(trimmed_string, string);
+    input->string = trimmed_string;
+    input->length = strlen(trimmed_string);
     input->pos = 0;
 }
 
@@ -81,9 +101,19 @@ bool input_is_eof(InputStream *input) {
     return (input->pos >= input->length);
 }
 
-// Token input_read_symbol(InputStream *input) {
-//
-// }
+Token input_read_symbol(InputStream *input) {
+    Token token = {0};
+    char current_char = input_next(input);
+    token.value = malloc(2 * sizeof(char));
+    switch (current_char) {
+        case '+':
+            token.type = PLUS;
+        case '-':
+            token.type = MINUS;
+        default:
+            exit(1);
+    }
+}
 
 
 bool input_parse(TokenArr *tokens, InputStream *input) {
@@ -92,56 +122,51 @@ bool input_parse(TokenArr *tokens, InputStream *input) {
 }
 
 
-bool test_string_remove_all_whitespace() {
+void test_string_remove_all_whitespace(void) {
     char *string = " f o   o b    a r  ";
-    int original_len = strlen(string);
-    string_remove_all_whitespace(string);
-    if (strcmp(string, "foobar") != 0) return false;
-    if (original_len != strlen(string)) return false;
-    return true;
+    char *trimmed_string = malloc(strlen(string) * sizeof(char));
+
+    string_remove_spaces(trimmed_string, string);
+
+    assert(strcmp(trimmed_string, "foobar") == 0);
 }
 
-bool test_input_next(void) {
+void test_input_next(void) {
     char *string = "test";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
-    if (input_next(&input_stream) != 't') return false;
-    if (input_next(&input_stream) != 'e') return false;
-    if (input_next(&input_stream) != 's') return false;
-    if (input_next(&input_stream) != 't') return false;
-    return true;
+
+    assert(input_next(&input_stream) == 't');
+    assert(input_next(&input_stream) == 'e');
+    assert(input_next(&input_stream) == 's');
+    assert(input_next(&input_stream) == 't');
 }
 
-bool test_input_peek(void) {
-    char *string = "foo bar";
+void test_input_peek(void) {
+    char *string = "foobar";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
-    if (input_peek(&input_stream) != 'f') return false;
-    if (input_next(&input_stream) != 'f') return false;
+    assert(input_peek(&input_stream) == 'f');
+    assert(input_next(&input_stream) == 'f');
 
-    if (input_peek(&input_stream) != 'o') return false;
-    if (input_next(&input_stream) != 'o') return false;
+    assert(input_peek(&input_stream) == 'o');
+    assert(input_next(&input_stream) == 'o');
 
-    if (input_peek(&input_stream) != 'o') return false;
-    if (input_next(&input_stream) != 'o') return false;
+    assert(input_peek(&input_stream) == 'o');
+    assert(input_next(&input_stream) == 'o');
 
-    if (input_peek(&input_stream) != ' ') return false;
-    if (input_next(&input_stream) != ' ') return false;
+    assert(input_peek(&input_stream) == 'b');
+    assert(input_next(&input_stream) == 'b');
 
-    if (input_peek(&input_stream) != 'b') return false;
-    if (input_next(&input_stream) != 'b') return false;
+    assert(input_peek(&input_stream) == 'a');
+    assert(input_next(&input_stream) == 'a');
 
-    if (input_peek(&input_stream) != 'a') return false;
-    if (input_next(&input_stream) != 'a') return false;
-
-    if (input_peek(&input_stream) != 'r') return false;
-    if (input_next(&input_stream) != 'r') return false;
-
-    return true;
+    assert(input_peek(&input_stream) == 'r');
+    assert(input_next(&input_stream) == 'r');
 }
 
-bool test_input_is_eof(void) {
+void test_input_is_eof(void) {
     char *string = "12345";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
@@ -152,35 +177,27 @@ bool test_input_is_eof(void) {
     (void) input_next(&input_stream);
     (void) input_next(&input_stream);
 
-    if (!input_is_eof(&input_stream)) return false;
-
-    return true;
+    assert(input_is_eof(&input_stream));
 }
 
-bool test_input_skip_whitespace(void) {
+void test_input_with_whitespace(void) {
     char *string = "b  a rt  ";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
-    // if (input_next(&input_stream) != 'b') return false;
-    // input_skip_whitespaces(&input_stream);
-    // input_skip_whitespaces(&input_stream);
-    // if (input_next(&input_stream) != 'a') return false;
-    // input_skip_whitespaces(&input_stream);
-    // if (input_next(&input_stream) != 'r') return false;
-    // if (input_next(&input_stream) != 't') return false;
-    // if (input_is_eof(&input_stream)) return false;
-    // input_skip_whitespaces(&input_stream);
-    // if (!input_is_eof(&input_stream)) return false;
-    return true;
+    assert(input_next(&input_stream) == 'b');
+    assert(input_next(&input_stream) == 'a');
+    assert(input_next(&input_stream) == 'r');
+    assert(input_next(&input_stream) == 't');
+    assert(input_is_eof(&input_stream));
 }
 
 bool test_all(void) {
-    if (!test_string_remove_all_whitespace()) return false;
-    if (!test_input_next()) return false;
-    if (!test_input_peek()) return false;
-    if (!test_input_is_eof()) return false;
-    if (!test_input_skip_whitespace()) return false;
+    test_string_remove_all_whitespace();
+    test_input_next();
+    test_input_peek();
+    test_input_is_eof();
+    test_input_with_whitespace();
     return true;
 }
 
