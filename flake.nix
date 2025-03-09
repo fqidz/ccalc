@@ -18,6 +18,7 @@
         pkgs.clang-tools
         pkgs.clang
         pkgs.gnumake
+        pkgs.gdb
 
         # manpaths dont appear in devshells
         # https://github.com/NixOS/nixpkgs/pull/234367

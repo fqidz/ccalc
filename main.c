@@ -75,6 +75,18 @@ void string_remove_spaces (char* restrict str_trimmed, const char* restrict str_
   *str_trimmed = '\0';
 }
 
+void string_append_char(char *string, char c) {
+    char c_as_string[2];
+    c_as_string[0] = c;
+    c_as_string[1] = '\0';
+
+    char *tmp = realloc(string, (strlen(string) + 3) * sizeof(char));
+    if (!tmp) exit(1);
+
+    string = tmp;
+    strcat(string, c_as_string);
+}
+
 void input_free(InputStream *input) {
     free(input->string);
     input->length = 0;
@@ -100,7 +112,7 @@ char input_next(InputStream *input) {
 }
 
 char input_peek(InputStream *input) {
-    assert(!input_is_eof(input));
+    // assert(!input_is_eof(input));
     return input->string[input->pos];
 }
 
@@ -124,37 +136,72 @@ Token input_read_symbol(InputStream *input) {
     Token token = {0};
     switch (input_next(input)) {
         case '+':
+            // might be undefined behaviour cause its a string literal?
             token.value = "+";
             token.type = PLUS;
+            break;
         case '-':
             token.value = "-";
             token.type = MINUS;
+            break;
         case '*':
         case 'x':
         case 'X':
             token.value = "*";
             token.type = MULTIPLY;
+            break;
         case '/':
             token.value = "/";
             token.type = DIVIDE;
+            break;
         default:
+            // unreachable
             exit(1);
     }
+
+    return token;
 }
 
-Token input_read_digit(InputStream *input) {
+Token input_read_number(InputStream *input) {
     assert(!input_is_eof(input));
     assert(isdigit(input_peek(input)) || input_peek(input) == '.');
+
+    Token token = {0};
+    token.value = malloc(2 * sizeof(char));
+    token.type = NUMBER;
+
+    bool has_dot = false;
+    while (!input_is_eof(input)) {
+        char next_char = input_next(input);
+        if (isdigit(next_char)) {
+            string_append_char(token.value, next_char);
+        } else if (next_char == '.') {
+            if (!has_dot) {
+                string_append_char(token.value, next_char);
+                has_dot = true;
+            } else {
+                printf("%c\n", next_char);
+                // TODO: error
+                exit(1);
+            }
+        }
+
+        if (!isdigit(input_peek(input)) && input_peek(input) != '.') {
+            break;
+        }
+    }
+
+    return token;
 }
 
-bool input_parse(TokenArr *tokens, InputStream *input) {
+bool parse(TokenArr *tokens, InputStream *input) {
 
     return true;
 }
 
-
 void test_string_remove_all_whitespace(void) {
-    char *string = " f o   o b    a r  ";
+    char *string = malloc(20 * sizeof(char));
+    strcpy(string, " f o   o b    a r  ");
     char *trimmed_string = malloc(strlen(string) * sizeof(char));
 
     string_remove_spaces(trimmed_string, string);
@@ -162,8 +209,19 @@ void test_string_remove_all_whitespace(void) {
     assert(strcmp(trimmed_string, "foobar") == 0);
 }
 
+void test_string_append_char(void) {
+    char *string = malloc(9 * sizeof(char));
+
+    strcpy(string, "chocobar");
+    char c = 's';
+
+    string_append_char(string, c);
+
+    assert(strcmp(string, "chocobars") == 0);
+}
+
 void test_input_next(void) {
-    char *string = "test";
+    const char *string = "test";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -174,7 +232,7 @@ void test_input_next(void) {
 }
 
 void test_input_peek(void) {
-    char *string = "foobar";
+    const char *string = "foobar";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -198,7 +256,7 @@ void test_input_peek(void) {
 }
 
 void test_input_is_eof(void) {
-    char *string = "12345";
+    const char *string = "12345";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -212,7 +270,7 @@ void test_input_is_eof(void) {
 }
 
 void test_input_with_whitespace(void) {
-    char *string = "b  a rt  ";
+    const char *string = "b  a rt  ";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -224,7 +282,7 @@ void test_input_with_whitespace(void) {
 }
 
 void test_input_is_symbol(void) {
-    char *string = "+-*xX/";
+    const char *string = "+-*xX/";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -232,7 +290,7 @@ void test_input_is_symbol(void) {
         assert(is_symbol(input_next(&input_stream)));
     }
 
-    string = "+-*;xX/";
+    string = "x+-;/X*";
     input_free(&input_stream);
     input_init(&input_stream, string);
     assert(is_symbol(input_next(&input_stream)));
@@ -244,14 +302,35 @@ void test_input_is_symbol(void) {
     assert(is_symbol(input_next(&input_stream)));
 }
 
+void test_input_read_number(void) {
+    char *string = malloc(11 * sizeof(char));
+    strcpy(string, "1.02 + 232");
+    InputStream input_stream = {0};
+    input_init(&input_stream, string);
+
+    Token first_number = input_read_number(&input_stream);
+    assert(strcmp(first_number.value, "1.02") == 0);
+    assert(first_number.type == NUMBER);
+
+    Token plus_symbol = input_read_symbol(&input_stream);
+    assert(strcmp(plus_symbol.value, "+") == 0);
+    assert(plus_symbol.type == PLUS);
+
+    Token second_number = input_read_number(&input_stream);
+    assert(strcmp(second_number.value, "232") == 0);
+    assert(second_number.type == NUMBER);
+}
+
 
 void test_all(void) {
     test_string_remove_all_whitespace();
+    test_string_append_char();
     test_input_next();
     test_input_peek();
     test_input_is_eof();
     test_input_with_whitespace();
     test_input_is_symbol();
+    test_input_read_number();
 }
 
 int main(void) {

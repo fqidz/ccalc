@@ -1,5 +1,5 @@
 CC = clang
-ARGS = -std=c99 -Wall -Werror
+ARGS = -std=c99 -g -Wall -Werror
 PROGRAM = main
 
 out:
