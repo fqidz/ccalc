@@ -1,7 +1,5 @@
 CC = clang
 ARGS = -std=c99 -g -Wall -Wextra -pedantic -Werror
-# PROGRAM = calc
-# HEADERS = calc.h tests.h
 
 out:
 	mkdir ./out
@@ -11,54 +9,37 @@ calc.o: out calc.c calc.h
 	$(CC) $(ARGS) -c calc.c -o out/calc.o
 
 libcalc.a: calc.o
-	ar rv out/libcalc.a out/calc.o
-	ranlib out/libcalc.a
+	ar rcs out/libcalc.a out/calc.o
 
 
 main.o: out main.c libcalc.a
-	$(CC) $(ARGS) -Lout/ main.c -o out/main.o -lcalc
+	$(CC) $(ARGS) -c main.c -o out/main.o
 
 tests.o: out tests.c tests.h libcalc.a
-	$(CC) $(ARGS) -Lout/ tests.c -o out/tests.o -lcalc
+	$(CC) $(ARGS) -c tests.c -o out/tests.o
 
 
 main: main.o
-	$(CC) out/main.o -o out/main -v
+	$(CC) -Lout out/main.o -o out/main -lcalc
 
 tests: tests.o
-	$(CC) out/tests.o -o out/tests
+	$(CC) -Lout out/tests.o -o out/tests -lcalc
 
 
+.PHONY: run
 run: main
 	out/main
 
-test: main
+.PHONY: test
+test: tests
 	out/tests
 
+.PHONY: run_and_test
+run_and_test: main tests
+	out/tests
+	out/main
+
+
+.PHONY: clean
 clean:
 	rm -rf out/
-
-# calc.o: calc.c out $(HEADERS)
-# 	$(CC) $(ARGS) -c $(PROGRAM).c -o ./out/$(PROGRAM).o
-#
-# tests.o: tests.c out $(HEADERS) calc
-# 	$(CC) $(ARGS) -I/home/faidz/Projects/c-calc/out tests.c -o ./out/tests.o -lcalc -v
-#
-# calc: calc.o
-# 	$(CC) ./out/$(PROGRAM).o -o ./out/$(PROGRAM)
-#
-# tests: tests.o
-# 	$(CC) ./out/tests.o -o ./out/tests
-#
-#
-# run_test: tests
-# 	./out/tests
-#
-# run: calc
-# 	./out/$(PROGRAM)
-#
-# test_and_run: run_test run
-#
-#
-# clean:
-# 	rm -rf ./out
