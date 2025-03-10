@@ -19,6 +19,7 @@
         pkgs.clang
         pkgs.gnumake
         pkgs.gdb
+        pkgs.glib
 
         # manpaths dont appear in devshells
         # https://github.com/NixOS/nixpkgs/pull/234367

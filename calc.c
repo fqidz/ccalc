@@ -26,7 +26,7 @@ void tokenarr_append(TokenArr *tokenarr, Token item) {
 }
 
 void tokenarr_free(TokenArr *tokenarr) {
-    for (int i = 0; i <= tokenarr->item_end_pos; i++) {
+    for (size_t i = 0; i <= tokenarr->item_end_pos; i++) {
         token_free(&tokenarr->items[i]);
     }
     free(tokenarr->items);
@@ -167,25 +167,7 @@ Token input_read_number(InputStream *input) {
     return token;
 }
 
-bool parse(TokenArr *tokens, InputStream *input) {
-
-    return true;
-}
-
-int main(void) {
-    char input_string[20];
-
-    printf("Input: ");
-    if (!fgets(input_string, sizeof(input_string) / sizeof(input_string[0]), stdin)) return 1;
-    input_string[strcspn(input_string, "\n")] = 0;
-
-    InputStream input_stream = {0};
-    input_init(&input_stream, input_string);
-
-    while (!input_is_eof(&input_stream)) {
-        char next_char = input_next(&input_stream);
-        printf("Pos %zu: '%c'\n", input_stream.pos, next_char);
-    }
-
-    return 0;
-}
+// bool parse(TokenArr *tokens, InputStream *input) {
+//
+//     return true;
+// }
