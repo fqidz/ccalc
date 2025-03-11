@@ -36,6 +36,7 @@ typedef struct {
     size_t item_end_pos;
 } TokenArr;
 
+void tokenarr_init(TokenArr *tokenarr, size_t length);
 void tokenarr_append(TokenArr *tokenarr, Token item);
 void tokenarr_free(TokenArr *tokenarr);
 

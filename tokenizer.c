@@ -1,15 +1,20 @@
 #include <ctype.h>
 #include "tokenizer.h"
 
+void tokenarr_init(TokenArr *tokenarr, size_t length) {
+    // tokenarr_free(tokenarr);
+    tokenarr->length = length;
+    tokenarr->item_end_pos = 0;
+    tokenarr->items = malloc(tokenarr->length * sizeof(Token));
+}
+
 void token_free(Token *token) {
     free(token->value);
 }
 
 void tokenarr_append(TokenArr *tokenarr, Token item) {
     if (!tokenarr->items) {
-        tokenarr->length = 2;
-        tokenarr->item_end_pos = 0;
-        tokenarr->items = malloc(tokenarr->length * sizeof(Token));
+        tokenarr_init(tokenarr, 2);
     }
 
     if (tokenarr->item_end_pos >= tokenarr->length) {
