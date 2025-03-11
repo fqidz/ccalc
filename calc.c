@@ -1,9 +1,4 @@
-#include <assert.h>
 #include <ctype.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <stdlib.h>
 #include "calc.h"
 
 void token_free(Token *token) {
@@ -121,24 +116,27 @@ Token input_read_symbol(InputStream *input) {
     assert(!input_is_eof(input));
     assert(is_symbol(input_peek(input)));
     Token token = {0};
+    token.value = malloc(2 * sizeof(char));
+    token.value[1] = '\0';
+
     switch (input_next(input)) {
         case '+':
             // might be undefined behaviour cause its a string literal?
-            token.value = "+";
+            token.value[0] = '+';
             token.type = PLUS;
             break;
         case '-':
-            token.value = "-";
+            token.value[0] = '-';
             token.type = MINUS;
             break;
         case '*':
         case 'x':
         case 'X':
-            token.value = "*";
+            token.value[0] = '*';
             token.type = MULTIPLY;
             break;
         case '/':
-            token.value = "/";
+            token.value[0] = '/';
             token.type = DIVIDE;
             break;
         default:
@@ -214,6 +212,7 @@ bool parse(TokenArr *tokens, InputStream *input) {
         } else if (is_bracket(peeked_char)) {
             token = input_read_bracket(input);
         } else {
+            printf("[ERROR] %zu: Invalid character '%c'\n", input->pos, peeked_char);
             return false;
         }
 
