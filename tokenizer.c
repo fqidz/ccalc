@@ -25,6 +25,11 @@ void tokenarr_append(TokenArr *tokenarr, Token item) {
     tokenarr->items[tokenarr->item_end_pos++] = item;
 }
 
+Token tokenarr_pop(TokenArr *tokenarr) {
+    assert(tokenarr->item_end_pos >= 0);
+    return tokenarr->items[tokenarr->item_end_pos--];
+}
+
 void tokenarr_free(TokenArr *tokenarr) {
     for (size_t i = 0; i <= tokenarr->item_end_pos; i++) {
         token_free(&tokenarr->items[i]);
