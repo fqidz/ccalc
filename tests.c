@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "calc.h"
+#include "tokenizer.h"
 
 static void test_string_remove_all_whitespace(void) {
     char *string = malloc(20 * sizeof(char));

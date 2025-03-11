@@ -5,25 +5,25 @@ out:
 	mkdir ./out
 
 
-calc.o: out calc.c calc.h
-	$(CC) $(ARGS) -c calc.c -o out/calc.o
+tokenizer.o: out tokenizer.c tokenizer.h
+	$(CC) $(ARGS) -c tokenizer.c -o out/tokenizer.o
 
-libcalc.a: calc.o
-	ar rcs out/libcalc.a out/calc.o
+libtokenizer.a: tokenizer.o
+	ar rcs out/libtokenizer.a out/tokenizer.o
 
 
-main.o: out main.c libcalc.a
+main.o: out main.c libtokenizer.a
 	$(CC) $(ARGS) -c main.c -o out/main.o
 
-tests.o: out tests.c libcalc.a
+tests.o: out tests.c libtokenizer.a
 	$(CC) $(ARGS) -c tests.c -o out/tests.o
 
 
 main: main.o
-	$(CC) -Lout out/main.o -o out/main -lcalc
+	$(CC) -Lout out/main.o -o out/main -ltokenizer
 
 tests: tests.o
-	$(CC) -Lout out/tests.o -o out/tests -lcalc
+	$(CC) -Lout out/tests.o -o out/tests -ltokenizer
 
 
 .PHONY: run

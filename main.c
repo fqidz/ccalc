@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include "calc.h"
+#include "tokenizer.h"
 
 
 int main(void) {
@@ -15,7 +15,7 @@ int main(void) {
     InputStream input_stream = {0};
     input_init(&input_stream, input_string);
 
-    if (!parse(&tokens, &input_stream)) return 1;
+    if (!input_tokenize(&tokens, &input_stream)) return 1;
 
     for (size_t i = 0; i < tokens.item_end_pos; i++) {
         printf("%zu:\t\"", i);

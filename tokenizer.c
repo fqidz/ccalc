@@ -1,5 +1,5 @@
 #include <ctype.h>
-#include "calc.h"
+#include "tokenizer.h"
 
 void token_free(Token *token) {
     free(token->value);
@@ -201,7 +201,7 @@ Token input_read_bracket(InputStream *input) {
     return token;
 }
 
-bool parse(TokenArr *tokens, InputStream *input) {
+bool input_tokenize(TokenArr *tokens, InputStream *input) {
     while (!input_is_eof(input)) {
         char peeked_char = input_peek(input);
         Token token = {0};

@@ -1,5 +1,5 @@
-#ifndef CALC_H
-#define CALC_H
+#ifndef TOKENIZER_H
+#define TOKENIZER_H
 
 #include <assert.h>
 #include <stdio.h>
@@ -65,6 +65,6 @@ void string_append_char(char *string, char c);
 bool is_symbol(char c);
 bool is_bracket(char c);
 
-bool parse(TokenArr *tokens, InputStream *input);
+bool input_tokenize(TokenArr *tokens, InputStream *input);
 
-#endif // CALC_H
+#endif // TOKENIZER_H
