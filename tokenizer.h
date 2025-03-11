@@ -19,6 +19,16 @@ typedef enum {
     RIGHT_PAREN,
 } TokenType;
 
+/*
+ * Return:
+ * '-1' lhs < rhs
+ *
+ * '0' lhs == rhs
+ *
+ * '1' lhs > rhs
+ * */
+int token_type_compare(TokenType lhs, TokenType rhs);
+
 // ---------------------------------------------------------
 
 typedef struct {
@@ -33,12 +43,13 @@ void token_free(Token *token);
 typedef struct {
     Token *items;
     size_t length;
-    size_t item_end_pos;
+    size_t item_count;
 } TokenArr;
 
 void tokenarr_init(TokenArr *tokenarr, size_t length);
 void tokenarr_append(TokenArr *tokenarr, Token item);
 void tokenarr_free(TokenArr *tokenarr);
+Token tokenarr_pop(TokenArr *tokenarr);
 
 // ---------------------------------------------------------
 

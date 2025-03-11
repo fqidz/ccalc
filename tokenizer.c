@@ -1,10 +1,68 @@
 #include <ctype.h>
 #include "tokenizer.h"
 
+int token_type_compare(TokenType lhs, TokenType rhs) {
+    switch (lhs) {
+        case NUMBER:
+            switch (rhs) {
+                case NUMBER:
+                    return 0;
+                case PLUS:
+                case MINUS:
+                case MULTIPLY:
+                case DIVIDE:
+                case LEFT_PAREN:
+                case RIGHT_PAREN:
+                    return -1;
+            }
+        case PLUS:
+        case MINUS:
+            switch (rhs) {
+                case NUMBER:
+                    return 1;
+                case PLUS:
+                case MINUS:
+                    return 0;
+                case MULTIPLY:
+                case DIVIDE:
+                case LEFT_PAREN:
+                case RIGHT_PAREN:
+                    return -1;
+            }
+        case MULTIPLY:
+        case DIVIDE:
+            switch (rhs) {
+                case NUMBER:
+                case PLUS:
+                case MINUS:
+                    return 1;
+                case MULTIPLY:
+                case DIVIDE:
+                    return 0;
+                case LEFT_PAREN:
+                case RIGHT_PAREN:
+                    return -1;
+            }
+        case LEFT_PAREN:
+        case RIGHT_PAREN:
+            switch (rhs) {
+                case NUMBER:
+                case PLUS:
+                case MINUS:
+                case MULTIPLY:
+                case DIVIDE:
+                    return 1;
+                case LEFT_PAREN:
+                case RIGHT_PAREN:
+                    return 0;
+            }
+    }
+}
+
 void tokenarr_init(TokenArr *tokenarr, size_t length) {
     // tokenarr_free(tokenarr);
     tokenarr->length = length;
-    tokenarr->item_end_pos = 0;
+    tokenarr->item_count = 0;
     tokenarr->items = malloc(tokenarr->length * sizeof(Token));
 }
 
@@ -17,27 +75,27 @@ void tokenarr_append(TokenArr *tokenarr, Token item) {
         tokenarr_init(tokenarr, 2);
     }
 
-    if (tokenarr->item_end_pos >= tokenarr->length) {
+    if (tokenarr->item_count >= tokenarr->length) {
         tokenarr->length *= 2;
         tokenarr->items = realloc(tokenarr->items, tokenarr->length * sizeof(Token));
     }
 
-    tokenarr->items[tokenarr->item_end_pos++] = item;
+    tokenarr->items[tokenarr->item_count++] = item;
 }
 
 Token tokenarr_pop(TokenArr *tokenarr) {
-    assert(tokenarr->item_end_pos >= 0);
-    return tokenarr->items[tokenarr->item_end_pos--];
+    assert(tokenarr->item_count > 0);
+    return tokenarr->items[--tokenarr->item_count];
 }
 
 void tokenarr_free(TokenArr *tokenarr) {
-    for (size_t i = 0; i <= tokenarr->item_end_pos; i++) {
+    for (size_t i = 0; i <= tokenarr->item_count; i++) {
         token_free(&tokenarr->items[i]);
     }
     free(tokenarr->items);
     tokenarr->items = NULL;
     tokenarr->length = 0;
-    tokenarr->item_end_pos = 0;
+    tokenarr->item_count = 0;
 }
 
 void string_remove_spaces (char* restrict str_trimmed, const char* restrict str_untrimmed) {

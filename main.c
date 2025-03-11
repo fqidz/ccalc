@@ -17,7 +17,7 @@ int main(void) {
 
     if (!input_tokenize(&tokens, &input_stream)) return 1;
 
-    for (size_t i = 0; i < tokens.item_end_pos; i++) {
+    for (size_t i = 0; i < tokens.item_count; i++) {
         printf("%zu:\t\"", i);
         char *current_token_name = tokens.items[i].value;
         for (size_t j = 0; j < strlen(current_token_name); j++) {
