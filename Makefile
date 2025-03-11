@@ -1,5 +1,5 @@
 CC = clang
-ARGS = -std=c99 -g -Wall -Wextra -pedantic -Werror
+ARGS = -xc -std=c99 -g -Wall -Wextra -pedantic -Werror
 
 out:
 	mkdir ./out
@@ -15,7 +15,7 @@ libcalc.a: calc.o
 main.o: out main.c libcalc.a
 	$(CC) $(ARGS) -c main.c -o out/main.o
 
-tests.o: out tests.c tests.h libcalc.a
+tests.o: out tests.c libcalc.a
 	$(CC) $(ARGS) -c tests.c -o out/tests.o
 
 

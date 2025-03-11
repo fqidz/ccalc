@@ -6,6 +6,7 @@
 
 int main(void) {
     char input_string[256];
+    TokenArr tokens = {0};
 
     printf("Input: \n");
     if (!fgets(input_string, sizeof(input_string) / sizeof(input_string[0]), stdin)) return 1;
@@ -14,11 +15,15 @@ int main(void) {
     InputStream input_stream = {0};
     input_init(&input_stream, input_string);
 
-    printf("--------------\n");
-    while (!input_is_eof(&input_stream)) {
-        size_t current_pos = input_stream.pos;
-        char next_char = input_next(&input_stream);
-        printf("Pos %zu:\t'%c'\n", current_pos, next_char);
+    if (!parse(&tokens, &input_stream)) return 1;
+
+    for (size_t i = 0; i < tokens.item_end_pos; i++) {
+        printf("%zu:\t\"", i);
+        char *current_token_name = tokens.items[i].value;
+        for (size_t j = 0; j < strlen(current_token_name); j++) {
+            printf("%c", current_token_name[j]);
+        }
+        printf("\"\n");
     }
 
     return 0;

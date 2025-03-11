@@ -49,11 +49,11 @@ void string_remove_spaces (char* restrict str_trimmed, const char* restrict str_
 }
 
 void string_append_char(char *string, char c) {
-    char c_as_string[2];
+    char *c_as_string = malloc(2 * sizeof(char));
     c_as_string[0] = c;
     c_as_string[1] = '\0';
 
-    char *tmp = realloc(string, (strlen(string) + 3) * sizeof(char));
+    char *tmp = realloc(string, (strlen(string) + strlen(c_as_string) + 1) * sizeof(char));
     if (!tmp) exit(1);
 
     string = tmp;
@@ -97,6 +97,20 @@ bool is_symbol(char c) {
         case 'x':
         case 'X':
         case '/':
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool is_bracket(char c) {
+    switch (c) {
+        case '(':
+        case ')':
+        // case '[':
+        // case ']':
+        // case '{':
+        // case '}':
             return true;
         default:
             return false;
@@ -153,7 +167,6 @@ Token input_read_number(InputStream *input) {
                 string_append_char(token.value, next_char);
                 has_dot = true;
             } else {
-                printf("%c\n", next_char);
                 // TODO: error
                 exit(1);
             }
@@ -167,7 +180,45 @@ Token input_read_number(InputStream *input) {
     return token;
 }
 
-// bool parse(TokenArr *tokens, InputStream *input) {
-//
-//     return true;
-// }
+Token input_read_bracket(InputStream *input) {
+    assert(!input_is_eof(input));
+    assert(is_bracket(input_peek(input)));
+
+    Token token = {0};
+    char next_char = input_next(input);
+
+    token.value = malloc(2 * sizeof(char));
+    string_append_char(token.value, next_char);
+
+    switch (next_char) {
+        case '(':
+            token.type = LEFT_PAREN;
+        case ')':
+            token.type = RIGHT_PAREN;
+        default:
+            // unreachable
+            exit(1);
+    }
+
+    return token;
+}
+
+bool parse(TokenArr *tokens, InputStream *input) {
+    while (!input_is_eof(input)) {
+        char peeked_char = input_peek(input);
+        Token token = {0};
+        if (isdigit(peeked_char) || peeked_char == '.') {
+            token = input_read_number(input);
+        } else if (is_symbol(peeked_char)) {
+            token = input_read_symbol(input);
+        } else if (is_bracket(peeked_char)) {
+            token = input_read_bracket(input);
+        } else {
+            return false;
+        }
+
+        tokenarr_append(tokens, token);
+    }
+
+    return true;
+}

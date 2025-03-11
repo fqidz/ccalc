@@ -3,20 +3,22 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "calc.h"
-#include "tests.h"
 
-void test_string_remove_all_whitespace(void) {
+static void test_string_remove_all_whitespace(void) {
     char *string = malloc(20 * sizeof(char));
+    assert(string);
     strcpy(string, " f o   o b    a r  ");
     char *trimmed_string = malloc(strlen(string) * sizeof(char));
+    assert(trimmed_string);
 
     string_remove_spaces(trimmed_string, string);
 
     assert(strcmp(trimmed_string, "foobar") == 0);
 }
 
-void test_string_append_char(void) {
+static void test_string_append_char(void) {
     char *string = malloc(9 * sizeof(char));
+    assert(string);
 
     strcpy(string, "chocobar");
     char c = 's';
@@ -26,7 +28,7 @@ void test_string_append_char(void) {
     assert(strcmp(string, "chocobars") == 0);
 }
 
-void test_input_next(void) {
+static void test_input_next(void) {
     const char *string = "test";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
@@ -37,7 +39,7 @@ void test_input_next(void) {
     assert(input_next(&input_stream) == 't');
 }
 
-void test_input_peek(void) {
+static void test_input_peek(void) {
     const char *string = "foobar";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
@@ -61,7 +63,7 @@ void test_input_peek(void) {
     assert(input_next(&input_stream) == 'r');
 }
 
-void test_input_is_eof(void) {
+static void test_input_is_eof(void) {
     const char *string = "12345";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
@@ -75,7 +77,7 @@ void test_input_is_eof(void) {
     assert(input_is_eof(&input_stream));
 }
 
-void test_input_with_whitespace(void) {
+static void test_input_with_whitespace(void) {
     const char *string = "b  a rt  ";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
@@ -87,7 +89,35 @@ void test_input_with_whitespace(void) {
     assert(input_is_eof(&input_stream));
 }
 
-void test_input_is_symbol(void) {
+static void test_input_read_number(void) {
+    char *string = malloc(17 * sizeof(char));
+    assert(string);
+    strcpy(string, "1.02 + 232 - .98");
+    InputStream input_stream = {0};
+    input_init(&input_stream, string);
+
+    Token first_number = input_read_number(&input_stream);
+    assert(strcmp(first_number.value, "1.02") == 0);
+    assert(first_number.type == NUMBER);
+
+    Token plus_symbol = input_read_symbol(&input_stream);
+    assert(strcmp(plus_symbol.value, "+") == 0);
+    assert(plus_symbol.type == PLUS);
+
+    Token second_number = input_read_number(&input_stream);
+    assert(strcmp(second_number.value, "232") == 0);
+    assert(second_number.type == NUMBER);
+
+    Token minus_symbol = input_read_symbol(&input_stream);
+    assert(strcmp(minus_symbol.value, "-") == 0);
+    assert(minus_symbol.type == MINUS);
+
+    Token third_number = input_read_number(&input_stream);
+    assert(strcmp(third_number.value, ".98") == 0);
+    assert(third_number.type == NUMBER);
+}
+
+static void test_input_is_symbol(void) {
     const char *string = "+-*xX/";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
@@ -108,35 +138,37 @@ void test_input_is_symbol(void) {
     assert(is_symbol(input_next(&input_stream)));
 }
 
-void test_input_read_number(void) {
-    char *string = malloc(11 * sizeof(char));
-    strcpy(string, "1.02 + 232");
+static void test_input_is_bracket(void) {
+    // const char *string = "[({})]})";
+    const char *string = "())())))((())";
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
-    Token first_number = input_read_number(&input_stream);
-    assert(strcmp(first_number.value, "1.02") == 0);
-    assert(first_number.type == NUMBER);
+    while (!input_is_eof(&input_stream)) {
+        assert(is_bracket(input_next(&input_stream)));
+    }
 
-    Token plus_symbol = input_read_symbol(&input_stream);
-    assert(strcmp(plus_symbol.value, "+") == 0);
-    assert(plus_symbol.type == PLUS);
-
-    Token second_number = input_read_number(&input_stream);
-    assert(strcmp(second_number.value, "232") == 0);
-    assert(second_number.type == NUMBER);
+    string = "ks:;/12";
+    input_free(&input_stream);
+    input_init(&input_stream, string);
+    while (!input_is_eof(&input_stream)) {
+        assert(!is_bracket(input_next(&input_stream)));
+    }
 }
 
 
-void test_all(void) {
+static void test_all(void) {
     test_string_remove_all_whitespace();
     test_string_append_char();
+
     test_input_next();
     test_input_peek();
     test_input_is_eof();
     test_input_with_whitespace();
-    test_input_is_symbol();
     test_input_read_number();
+
+    test_input_is_symbol();
+    test_input_is_bracket();
 }
 
 int main(void) {

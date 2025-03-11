@@ -55,6 +55,7 @@ bool input_is_eof(InputStream *input);
 
 Token input_read_symbol(InputStream *input);
 Token input_read_number(InputStream *input);
+Token input_read_bracket(InputStream *input);
 
 // ---------------------------------------------------------
 
@@ -62,5 +63,8 @@ void string_remove_spaces(char* restrict str_trimmed, const char* restrict str_u
 void string_append_char(char *string, char c);
 
 bool is_symbol(char c);
+bool is_bracket(char c);
+
+bool parse(TokenArr *tokens, InputStream *input);
 
 #endif // CALC_H
