@@ -5,7 +5,7 @@ out:
 	mkdir ./out
 
 
-tokenizer.o: out tokenizer.c tokenizer.h
+tokenizer.o: out tokenizer.c tokenizer.h logging.h
 	$(CC) $(ARGS) -c tokenizer.c -o out/tokenizer.o
 
 libtokenizer.a: tokenizer.o
@@ -15,7 +15,7 @@ libtokenizer.a: tokenizer.o
 main.o: out main.c libtokenizer.a
 	$(CC) $(ARGS) -c main.c -o out/main.o
 
-tests.o: out tests.c libtokenizer.a
+tests.o: out tests.c libtokenizer.a logging.h
 	$(CC) $(ARGS) -c tests.c -o out/tests.o
 
 

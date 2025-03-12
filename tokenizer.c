@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include "tokenizer.h"
+#include "logging.h"
 
 int token_type_compare(TokenType lhs, TokenType rhs) {
     switch (lhs) {
@@ -84,7 +85,7 @@ void tokenarr_append(TokenArr *tokenarr, Token item) {
 }
 
 Token tokenarr_pop(TokenArr *tokenarr) {
-    assert(tokenarr->item_count > 0);
+    LOG_ASSERT(tokenarr->item_count > 0);
     return tokenarr->items[--tokenarr->item_count];
 }
 
@@ -138,17 +139,16 @@ void input_init(InputStream *input, const char *string) {
 }
 
 bool input_is_eof(InputStream *input) {
-    assert(input->pos <= input->length);
+    LOG_ASSERT(input->pos <= input->length);
     return (input->pos == input->length);
 }
 
 char input_next(InputStream *input) {
-    assert(!input_is_eof(input));
+    LOG_ASSERT(!input_is_eof(input));
     return input->string[input->pos++];
 }
 
 char input_peek(InputStream *input) {
-    // assert(!input_is_eof(input));
     return input->string[input->pos];
 }
 
@@ -181,8 +181,8 @@ bool is_bracket(char c) {
 }
 
 Token input_read_symbol(InputStream *input) {
-    assert(!input_is_eof(input));
-    assert(is_symbol(input_peek(input)));
+    LOG_ASSERT(!input_is_eof(input));
+    LOG_ASSERT(is_symbol(input_peek(input)));
     Token token = {0};
     token.value = malloc(2 * sizeof(char));
     token.value[1] = '\0';
@@ -208,16 +208,15 @@ Token input_read_symbol(InputStream *input) {
             token.type = DIVIDE;
             break;
         default:
-            // unreachable
-            exit(1);
+            UNREACHABLE;
     }
 
     return token;
 }
 
 Token input_read_number(InputStream *input) {
-    assert(!input_is_eof(input));
-    assert(isdigit(input_peek(input)) || input_peek(input) == '.');
+    LOG_ASSERT(!input_is_eof(input));
+    LOG_ASSERT(isdigit(input_peek(input)) || input_peek(input) == '.');
 
     Token token = {0};
     token.value = malloc(2 * sizeof(char));
@@ -247,8 +246,8 @@ Token input_read_number(InputStream *input) {
 }
 
 Token input_read_bracket(InputStream *input) {
-    assert(!input_is_eof(input));
-    assert(is_bracket(input_peek(input)));
+    LOG_ASSERT(!input_is_eof(input));
+    LOG_ASSERT(is_bracket(input_peek(input)));
 
     Token token = {0};
     char next_char = input_next(input);
@@ -264,8 +263,7 @@ Token input_read_bracket(InputStream *input) {
             token.type = RIGHT_PAREN;
             break;
         default:
-            // unreachable
-            exit(1);
+            UNREACHABLE;
     }
 
     return token;
