@@ -259,8 +259,10 @@ Token input_read_bracket(InputStream *input) {
     switch (next_char) {
         case '(':
             token.type = LEFT_PAREN;
+            break;
         case ')':
             token.type = RIGHT_PAREN;
+            break;
         default:
             // unreachable
             exit(1);

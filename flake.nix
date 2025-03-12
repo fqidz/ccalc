@@ -21,6 +21,8 @@
         pkgs.gdb
         pkgs.glib
 
+        pkgs.hyperfine
+
         # manpaths dont appear in devshells
         # https://github.com/NixOS/nixpkgs/pull/234367
         # workaround here:

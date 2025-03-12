@@ -39,5 +39,6 @@ void tokens_to_postfix(TokenArr *tokens) {
         }
         token_free(&current_token);
     }
+    // free stuff
 
 }
