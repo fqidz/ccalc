@@ -1,5 +1,5 @@
 CC = clang
-ARGS = -xc -std=c99 -g -Wall -Wextra -pedantic -Werror
+ARGS = -xc -std=c99 -g -Wall -Wextra -Wimplicit-fallthrough -pedantic -Werror
 
 out:
 	mkdir ./out
