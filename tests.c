@@ -6,10 +6,11 @@
 #include "logging.h"
 
 static void test_token_type_compare(void) {
-    char *string = malloc(43 * sizeof(char));
-    assert(string);
-    //              0   1 2 3 4 5 6    7 89 a b c d e f  g h i
-    strcpy(string, "1.2 + 3 / 7 * 10.2 - (2 + 3 - 5 * 8.2) * 3");
+    //                  0   1 2 3 4 5 6    7 89 a b c d e f  g h i
+    char *tmp_string = "1.2 + 3 / 7 * 10.2 - (2 + 3 - 5 * 8.2) * 3";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     InputStream input_stream = {0};
     TokenArr tokens = {0};
     input_init(&input_stream, string);
@@ -83,9 +84,10 @@ static void test_token_type_compare(void) {
 }
 
 static void test_string_remove_all_whitespace(void) {
-    char *string = malloc(20 * sizeof(char));
-    LOG_ASSERT(string);
-    strcpy(string, " f o   o b    a r  ");
+    char *tmp_string = " f o   o b    a r  ";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     char *trimmed_string = malloc(strlen(string) * sizeof(char));
     LOG_ASSERT(trimmed_string);
 
@@ -95,7 +97,10 @@ static void test_string_remove_all_whitespace(void) {
 }
 
 static void test_string_append_char(void) {
-    char *string = malloc(9 * sizeof(char));
+    char *tmp_string = "chocobar";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     LOG_ASSERT(string);
     strcpy(string, "chocobar");
     char c = 's';
@@ -106,9 +111,10 @@ static void test_string_append_char(void) {
 }
 
 static void test_input_next(void) {
-    char *string = malloc(5 * sizeof(char));
-    LOG_ASSERT(string);
-    strcpy(string, "test");
+    char *tmp_string = "test";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -119,7 +125,10 @@ static void test_input_next(void) {
 }
 
 static void test_input_peek(void) {
-    const char *string = "foobar";
+    char *tmp_string = "foobar";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -143,7 +152,10 @@ static void test_input_peek(void) {
 }
 
 static void test_input_is_eof(void) {
-    const char *string = "12345";
+    char *tmp_string = "12345";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -157,7 +169,10 @@ static void test_input_is_eof(void) {
 }
 
 static void test_input_with_whitespace(void) {
-    const char *string = "b  a rt  ";
+    char *tmp_string = "b  a rt  ";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -169,13 +184,18 @@ static void test_input_with_whitespace(void) {
 }
 
 static void test_input_read_number(void) {
-    char *string = malloc(17 * sizeof(char));
-    LOG_ASSERT(string);
-    strcpy(string, "1.02 + 232 - .98");
+    char *tmp_string = "1.02 + 232 - .98";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
     Token first_number = input_read_number(&input_stream);
+    printf("%s\n", first_number.value);
+    printf("%s\n", input_stream.string);
+    printf("%i\n", strcmp(first_number.value, "1.02"));
+
     LOG_ASSERT(strcmp(first_number.value, "1.02") == 0);
     LOG_ASSERT(first_number.type == NUMBER);
 
@@ -197,7 +217,10 @@ static void test_input_read_number(void) {
 }
 
 static void test_input_is_symbol(void) {
-    const char *string = "+-*xX/";
+    char *tmp_string = "+-*xX/";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -205,7 +228,11 @@ static void test_input_is_symbol(void) {
         LOG_ASSERT(is_symbol(input_next(&input_stream)));
     }
 
-    string = "x+-;/X*";
+    free(string);
+    tmp_string = "x+-;/X*";
+    string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     input_free(&input_stream);
     input_init(&input_stream, string);
     LOG_ASSERT(is_symbol(input_next(&input_stream)));
@@ -218,8 +245,10 @@ static void test_input_is_symbol(void) {
 }
 
 static void test_input_is_bracket(void) {
-    // const char *string = "[({})]})";
-    const char *string = "())())))((())";
+    char *tmp_string = "())())))((())";
+    char *string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     InputStream input_stream = {0};
     input_init(&input_stream, string);
 
@@ -227,11 +256,33 @@ static void test_input_is_bracket(void) {
         assert(is_bracket(input_next(&input_stream)));
     }
 
-    string = "ks:;/12";
+    free(string);
+    tmp_string = "ks:(;/)12";
+    string = malloc((strlen(tmp_string) + 1) * sizeof(char));
+    strcpy(string, tmp_string);
+
     input_free(&input_stream);
     input_init(&input_stream, string);
+
     while (!input_is_eof(&input_stream)) {
-        assert(!is_bracket(input_next(&input_stream)));
+        char next_char = input_next(&input_stream);
+        switch (next_char) {
+            case 0:
+            case 1:
+            case 2:
+            case 4:
+            case 5:
+            case 7:
+            case 8:
+                LOG_ASSERT(is_bracket(next_char));
+                break;
+            case 3:
+            case 6:
+                LOG_ASSERT(is_bracket(next_char));
+                break;
+            default:
+                UNREACHABLE;
+        }
     }
 }
 

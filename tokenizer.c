@@ -99,7 +99,7 @@ void tokenarr_free(TokenArr *tokenarr) {
     tokenarr->item_count = 0;
 }
 
-void string_remove_spaces (char* restrict str_trimmed, const char* restrict str_untrimmed) {
+void string_remove_spaces (char* restrict str_trimmed, char* restrict str_untrimmed) {
   while (*str_untrimmed != '\0')
   {
     if(!isspace(*str_untrimmed))
@@ -130,9 +130,10 @@ void input_free(InputStream *input) {
     input->pos = 0;
 }
 
-void input_init(InputStream *input, const char *string) {
+void input_init(InputStream *input, char *string) {
     char *trimmed_string = malloc(strlen(string) * sizeof(char));
     string_remove_spaces(trimmed_string, string);
+    free(string);
     input->string = trimmed_string;
     input->length = strlen(trimmed_string);
     input->pos = 0;

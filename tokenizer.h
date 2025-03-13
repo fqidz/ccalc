@@ -60,7 +60,7 @@ typedef struct {
 } InputStream;
 
 void input_free(InputStream *input);
-void input_init(InputStream *input, const char *string);
+void input_init(InputStream *input, char *string);
 char input_next(InputStream *input);
 char input_peek(InputStream *input);
 bool input_is_eof(InputStream *input);
@@ -71,7 +71,7 @@ Token input_read_bracket(InputStream *input);
 
 // ---------------------------------------------------------
 
-void string_remove_spaces(char* restrict str_trimmed, const char* restrict str_untrimmed);
+void string_remove_spaces(char* restrict str_trimmed, char* restrict str_untrimmed);
 void string_append_char(char *string, char c);
 
 bool is_symbol(char c);
