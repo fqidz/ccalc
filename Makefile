@@ -37,7 +37,7 @@ tests.o: out tests.c  logging.h
 
 
 main: main.o libtokenizer.a libparse.a
-	$(CC) -Lout out/main.o -o out/main -ltokenizer -lparse
+	$(CC) -Lout out/main.o -o out/main -ltokenizer -lparse -lm
 
 tests: tests.o libtokenizer.a libparse.a
 	$(CC) -Lout out/tests.o -o out/tests -ltokenizer -lparse

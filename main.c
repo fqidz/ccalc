@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include "tokenizer.h"
@@ -23,29 +24,18 @@ int main(void)
     if (!input_tokenize(&tokens, &input_stream))
         return 1;
 
-    for (size_t i = 0; i < tokens.length; i++) {
-        printf("%zu:\t\"", i);
-        char *current_token_name = tokens.items[i].value;
-        for (size_t j = 0; j < strlen(current_token_name); j++) {
-            printf("%c", current_token_name[j]);
-        }
-        printf("\"\n");
-    }
-    printf("\n");
-
     tokens_to_postfix(&tokens);
 
-    for (size_t i = 0; i < tokens.length; i++) {
-        printf("%zu:\t\"", i);
-        char *current_token_name = tokens.items[i].value;
-        for (size_t j = 0; j < strlen(current_token_name); j++) {
-            printf("%c", current_token_name[j]);
-        }
-        printf("\"\n");
-    }
-
     double result = evaluate_postfix_tokens(&tokens);
-    printf("Result: %f\n", result);
+
+    double integral;
+    double fractional = fabs(modf(result, &integral));
+    if (fractional < 0.000001) {
+        double result_int = round(result);
+        printf("Result: %i\n", (int)result_int);
+    } else {
+        printf("Result: %f\n", result);
+    }
 
     return 0;
 }

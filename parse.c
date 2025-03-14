@@ -106,5 +106,6 @@ double evaluate_postfix_tokens(TokenArr *tokens)
     }
 
     LOG_ASSERT(stack_length == 1);
+
     return stack[0];
 }
