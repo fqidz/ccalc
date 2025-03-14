@@ -42,11 +42,11 @@ void token_free(Token *token);
 
 typedef struct {
     Token *items;
+    size_t capacity;
     size_t length;
-    size_t item_count;
 } TokenArr;
 
-void tokenarr_init(TokenArr *tokenarr, size_t length);
+void tokenarr_init(TokenArr *tokenarr, size_t capacity);
 void tokenarr_append(TokenArr *tokenarr, Token item);
 void tokenarr_free(TokenArr *tokenarr);
 Token tokenarr_pop(TokenArr *tokenarr);

@@ -82,7 +82,7 @@ static void test_input_tokenize(void) {
     input_init(&input_stream, string);
 
     LOG_ASSERT(input_tokenize(&tokens, &input_stream));
-    for (size_t i = 0; i < tokens.item_count; i++) {
+    for (size_t i = 0; i < tokens.length; i++) {
         Token token = tokens.items[i];
         switch (i) {
             case 0:
@@ -158,8 +158,8 @@ static void test_input_tokenize(void) {
 
     LOG_ASSERT(!input_tokenize(&tokens, &input_stream));
 
-    LOG_ASSERT(tokens.item_count == 5);
-    for (size_t i = 0; i < tokens.item_count; i++) {
+    LOG_ASSERT(tokens.length == 5);
+    for (size_t i = 0; i < tokens.length; i++) {
         Token token = tokens.items[i];
         switch (i) {
             case 0:

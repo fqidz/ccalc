@@ -58,11 +58,11 @@ int token_type_compare(TokenType lhs, TokenType rhs) {
     }
 }
 
-void tokenarr_init(TokenArr *tokenarr, size_t length) {
+void tokenarr_init(TokenArr *tokenarr, size_t capacity) {
     // tokenarr_free(tokenarr);
-    tokenarr->length = length;
-    tokenarr->item_count = 0;
-    tokenarr->items = malloc(tokenarr->length * sizeof(Token));
+    tokenarr->capacity = capacity;
+    tokenarr->length = 0;
+    tokenarr->items = malloc(tokenarr->capacity * sizeof(Token));
 }
 
 void token_free(Token *token) {
@@ -74,27 +74,27 @@ void tokenarr_append(TokenArr *tokenarr, Token item) {
         tokenarr_init(tokenarr, 2);
     }
 
-    if (tokenarr->item_count >= tokenarr->length) {
-        tokenarr->length *= 2;
-        tokenarr->items = realloc(tokenarr->items, tokenarr->length * sizeof(Token));
+    if (tokenarr->length >= tokenarr->capacity) {
+        tokenarr->capacity *= 2;
+        tokenarr->items = realloc(tokenarr->items, tokenarr->capacity * sizeof(Token));
     }
 
-    tokenarr->items[tokenarr->item_count++] = item;
+    tokenarr->items[tokenarr->length++] = item;
 }
 
 Token tokenarr_pop(TokenArr *tokenarr) {
-    LOG_ASSERT(tokenarr->item_count > 0);
-    return tokenarr->items[--tokenarr->item_count];
+    LOG_ASSERT(tokenarr->length > 0);
+    return tokenarr->items[--tokenarr->length];
 }
 
 void tokenarr_free(TokenArr *tokenarr) {
-    for (size_t i = 0; i <= tokenarr->item_count; i++) {
+    for (size_t i = 0; i <= tokenarr->length; i++) {
         token_free(&tokenarr->items[i]);
     }
     free(tokenarr->items);
     tokenarr->items = NULL;
+    tokenarr->capacity = 0;
     tokenarr->length = 0;
-    tokenarr->item_count = 0;
 }
 
 void string_remove_spaces (char* restrict str_trimmed, char* restrict str_untrimmed) {

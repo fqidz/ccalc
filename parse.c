@@ -5,8 +5,8 @@ void tokens_to_postfix(TokenArr *tokens) {
     // shunting yard algorithm
     TokenArr stack = {0};
     TokenArr output = {0};
-    tokenarr_init(&output, tokens->length);
-    for (size_t i = 0; i < tokens->item_count; i++) {
+    tokenarr_init(&output, tokens->capacity);
+    for (size_t i = 0; i < tokens->length; i++) {
         Token current_token = tokens->items[i];
         switch (current_token.type) {
             case NUMBER:
@@ -16,8 +16,8 @@ void tokens_to_postfix(TokenArr *tokens) {
             case MINUS:
             case MULTIPLY:
             case DIVIDE:
-                while (stack.item_count > 0) {
-                    Token last_stack_token = stack.items[stack.item_count - 1];
+                while (stack.length > 0) {
+                    Token last_stack_token = stack.items[stack.length - 1];
                     if (last_stack_token.type == LEFT_PAREN) break;
                     int comparison = token_type_compare(current_token.type, last_stack_token.type);
                     if (comparison == 1) break;
@@ -29,7 +29,7 @@ void tokens_to_postfix(TokenArr *tokens) {
                 tokenarr_append(&stack, current_token);
                 break;
             case RIGHT_PAREN:
-                while (stack.item_count > 0) {
+                while (stack.length > 0) {
                     Token popped_stack_token = tokenarr_pop(&stack);
                     if (popped_stack_token.type != LEFT_PAREN) {
                         tokenarr_append(&output, popped_stack_token);
@@ -44,7 +44,7 @@ void tokens_to_postfix(TokenArr *tokens) {
         }
     }
 
-    while (stack.item_count > 0) {
+    while (stack.length > 0) {
         tokenarr_append(&output, tokenarr_pop(&stack));
     }
 
