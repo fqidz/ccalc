@@ -72,6 +72,8 @@ Token input_read_bracket(InputStream *input);
 // ---------------------------------------------------------
 
 void string_remove_spaces(char* restrict str_trimmed, char* restrict str_untrimmed);
+/* Empty string needs to be initialized with calloc instead of malloc.
+ * */
 void string_append_char(char *string, char c);
 
 bool is_symbol(char c);

@@ -6,6 +6,7 @@
 #include "logging.h"
 
 char* new_string(const char* const string_literal) {
+    LOG_ASSERT(strlen(string_literal) > 0);
     char *string = malloc((strlen(string_literal) + 1) * sizeof(char));
     strcpy(string, string_literal);
 
@@ -110,6 +111,16 @@ static void test_string_append_char(void) {
     string_append_char(string, 'm');
 
     LOG_ASSERT(strcmp(string, "chocobars.com") == 0);
+
+    free(string);
+    // empty string needs to be initialized with calloc instead of malloc
+    string = calloc(2, sizeof(char));
+    string_append_char(string, 'm');
+    string_append_char(string, 'e');
+    string_append_char(string, 'o');
+    string_append_char(string, 'w');
+
+    LOG_ASSERT(strcmp(string, "meow") == 0);
 }
 
 static void test_input_next(void) {
