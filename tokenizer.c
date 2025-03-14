@@ -55,6 +55,8 @@ int token_type_compare(TokenType lhs, TokenType rhs) {
                 default:
                     UNREACHABLE;
             }
+        default:
+            UNREACHABLE;
     }
 }
 

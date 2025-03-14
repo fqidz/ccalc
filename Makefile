@@ -1,5 +1,16 @@
 CC = clang
-ARGS = -xc -std=c99 -g -Wall -Wextra -Wimplicit-fallthrough -pedantic -Werror
+ARGS = -xc\
+	   -std=c99\
+	   -g\
+	   -Weverything\
+	   -Werror\
+	   -Wno-used-but-marked-unused\
+	   -Wno-padded\
+	   -Wno-declaration-after-statement\
+	   -Wno-covered-switch-default\
+	   -Wno-unsafe-buffer-usage\
+	   -Wno-missing-prototypes\
+	   -Wno-switch-enum\
 
 out:
 	mkdir ./out

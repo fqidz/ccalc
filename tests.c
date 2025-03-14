@@ -5,7 +5,7 @@
 #include "tokenizer.h"
 #include "logging.h"
 
-char* new_string(const char* const string_literal) {
+static char* new_string(const char* const string_literal) {
     LOG_ASSERT(strlen(string_literal) > 0);
     char *string = malloc((strlen(string_literal) + 1) * sizeof(char));
     strcpy(string, string_literal);
@@ -351,7 +351,7 @@ static void test_input_is_bracket(void) {
     input_init(&input_stream, string);
 
     while (!input_is_eof(&input_stream)) {
-        char current_pos = input_stream.pos;
+        size_t current_pos = input_stream.pos;
         char next_char = input_next(&input_stream);
         switch (current_pos) {
             case 0:
