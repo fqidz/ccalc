@@ -113,9 +113,9 @@ void string_remove_spaces (char* restrict str_trimmed, char* restrict str_untrim
 }
 
 void string_append_char(char *string, char c) {
-    char *c_as_string = malloc(2 * sizeof(char));
+    char *c_as_string = calloc(2, sizeof(char));
     c_as_string[0] = c;
-    c_as_string[1] = '\0';
+    LOG_ASSERT(c_as_string[1] == '\0');
 
     char *tmp = realloc(string, (strlen(string) + strlen(c_as_string) + 1) * sizeof(char));
     if (!tmp) exit(1);
@@ -220,7 +220,7 @@ Token input_read_number(InputStream *input) {
     LOG_ASSERT(isdigit(input_peek(input)) || input_peek(input) == '.');
 
     Token token = {0};
-    token.value = malloc(2 * sizeof(char));
+    token.value = calloc(2, sizeof(char));
     token.type = NUMBER;
 
     bool has_dot = false;
@@ -253,7 +253,7 @@ Token input_read_bracket(InputStream *input) {
     Token token = {0};
     char next_char = input_next(input);
 
-    token.value = malloc(2 * sizeof(char));
+    token.value = calloc(2, sizeof(char));
     string_append_char(token.value, next_char);
 
     switch (next_char) {
