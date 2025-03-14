@@ -1,5 +1,6 @@
 #include "logging.h"
 #include "tokenizer.h"
+#include <stdlib.h>
 
 void tokens_to_postfix(TokenArr *tokens)
 {
@@ -53,4 +54,57 @@ void tokens_to_postfix(TokenArr *tokens)
     }
 
     *tokens = output;
+}
+
+double evaluate_postfix_tokens(TokenArr *tokens)
+{
+    double *stack;
+    stack = calloc(tokens->length, sizeof(double));
+    int stack_length = 0;
+    char *endptr;
+
+    for (size_t i = 0; i < tokens->length; i++) {
+        Token token = tokens->items[i];
+        double result = 0.0;
+        switch (token.type) {
+        case NUMBER:
+            stack[stack_length] = strtod(token.value, &endptr);
+            LOG_ASSERT(strlen(endptr) == 0);
+            stack_length++;
+            break;
+        case PLUS:
+        case MINUS:
+        case MULTIPLY:
+        case DIVIDE:;
+            if (stack_length < 2) {
+                UNREACHABLE;
+            }
+            double lhs = stack[stack_length - 2];
+            double rhs = stack[stack_length - 1];
+            stack_length -= 2;
+
+            if (token.type == PLUS) {
+                result = lhs + rhs;
+            } else if (token.type == MINUS) {
+                result = lhs - rhs;
+            } else if (token.type == MULTIPLY) {
+                result = lhs * rhs;
+            } else if (token.type == DIVIDE) {
+                result = lhs / rhs;
+            } else {
+                UNREACHABLE;
+            }
+
+            stack[stack_length] = result;
+            stack_length++;
+            break;
+        case LEFT_PAREN:
+        case RIGHT_PAREN:
+        default:
+            UNREACHABLE;
+        }
+    }
+
+    LOG_ASSERT(stack_length == 1);
+    return stack[0];
 }

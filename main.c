@@ -44,5 +44,8 @@ int main(void)
         printf("\"\n");
     }
 
+    double result = evaluate_postfix_tokens(&tokens);
+    printf("Result: %f\n", result);
+
     return 0;
 }
