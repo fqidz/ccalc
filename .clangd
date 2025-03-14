@@ -10,7 +10,7 @@ CompileFlags:
     -Wno-covered-switch-default,
     -Wno-unsafe-buffer-usage,
     -Wno-missing-prototypes,
-    -Wno-switch-enum,
+    # -Wno-switch-enum,
   ]
   Remove: [-W*]
   Compiler: clang

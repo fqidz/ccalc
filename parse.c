@@ -1,5 +1,6 @@
 #include "logging.h"
 #include "tokenizer.h"
+#include <math.h>
 #include <stdlib.h>
 
 void tokens_to_postfix(TokenArr *tokens)
@@ -19,13 +20,15 @@ void tokens_to_postfix(TokenArr *tokens)
         case MINUS:
         case MULTIPLY:
         case DIVIDE:
+        case POWER:
             while (stack.length > 0) {
                 Token last_stack_token = stack.items[stack.length - 1];
                 if (last_stack_token.type == LEFT_PAREN)
                     break;
                 int comparison = token_type_compare(current_token.type,
                                                     last_stack_token.type);
-                if (comparison == 1)
+                if (comparison == 1 ||
+                    token_is_right_associative(current_token.type))
                     break;
                 tokenarr_append(&output, tokenarr_pop(&stack));
             }
@@ -75,7 +78,8 @@ double evaluate_postfix_tokens(TokenArr *tokens)
         case PLUS:
         case MINUS:
         case MULTIPLY:
-        case DIVIDE:;
+        case DIVIDE:
+        case POWER:
             if (stack_length < 2) {
                 UNREACHABLE;
             }
@@ -83,15 +87,26 @@ double evaluate_postfix_tokens(TokenArr *tokens)
             double rhs = stack[stack_length - 1];
             stack_length -= 2;
 
-            if (token.type == PLUS) {
+            switch (token.type) {
+            case PLUS:
                 result = lhs + rhs;
-            } else if (token.type == MINUS) {
+                break;
+            case MINUS:
                 result = lhs - rhs;
-            } else if (token.type == MULTIPLY) {
+                break;
+            case MULTIPLY:
                 result = lhs * rhs;
-            } else if (token.type == DIVIDE) {
+                break;
+            case DIVIDE:
                 result = lhs / rhs;
-            } else {
+                break;
+            case POWER:
+                result = pow(lhs, rhs);
+                break;
+            case NUMBER:
+            case LEFT_PAREN:
+            case RIGHT_PAREN:
+            default:
                 UNREACHABLE;
             }
 

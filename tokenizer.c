@@ -13,6 +13,7 @@ int token_type_compare(TokenType lhs, TokenType rhs)
         case MINUS:
         case MULTIPLY:
         case DIVIDE:
+        case POWER:
             return -1;
         case LEFT_PAREN:
         case RIGHT_PAREN:
@@ -29,6 +30,7 @@ int token_type_compare(TokenType lhs, TokenType rhs)
             return 0;
         case MULTIPLY:
         case DIVIDE:
+        case POWER:
             return -1;
         case LEFT_PAREN:
         case RIGHT_PAREN:
@@ -45,6 +47,23 @@ int token_type_compare(TokenType lhs, TokenType rhs)
         case MULTIPLY:
         case DIVIDE:
             return 0;
+        case POWER:
+            return -1;
+        case LEFT_PAREN:
+        case RIGHT_PAREN:
+        default:
+            UNREACHABLE;
+        }
+    case POWER:
+        switch (rhs) {
+        case NUMBER:
+        case PLUS:
+        case MINUS:
+        case MULTIPLY:
+        case DIVIDE:
+            return 1;
+        case POWER:
+            return 0;
         case LEFT_PAREN:
         case RIGHT_PAREN:
         default:
@@ -53,9 +72,35 @@ int token_type_compare(TokenType lhs, TokenType rhs)
     case LEFT_PAREN:
     case RIGHT_PAREN:
         switch (rhs) {
+        case NUMBER:
+        case PLUS:
+        case MINUS:
+        case MULTIPLY:
+        case DIVIDE:
+        case POWER:
+        case LEFT_PAREN:
+        case RIGHT_PAREN:
         default:
             UNREACHABLE;
         }
+    default:
+        UNREACHABLE;
+    }
+}
+
+bool token_is_right_associative(TokenType token_type)
+{
+    switch (token_type) {
+    case POWER:
+        return true;
+    case NUMBER:
+    case PLUS:
+    case MINUS:
+    case MULTIPLY:
+    case DIVIDE:
+        return false;
+    case LEFT_PAREN:
+    case RIGHT_PAREN:
     default:
         UNREACHABLE;
     }
@@ -178,6 +223,7 @@ bool is_symbol(char c)
     case 'x':
     case 'X':
     case '/':
+    case '^':
         return true;
     default:
         return false;
@@ -226,6 +272,10 @@ Token input_read_symbol(InputStream *input)
     case '/':
         token.value[0] = '/';
         token.type = DIVIDE;
+        break;
+    case '^':
+        token.value[0] = '^';
+        token.type = POWER;
         break;
     default:
         UNREACHABLE;

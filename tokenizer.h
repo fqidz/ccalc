@@ -15,6 +15,7 @@ typedef enum {
     MINUS,
     MULTIPLY,
     DIVIDE,
+    POWER,
     LEFT_PAREN,
     RIGHT_PAREN,
 } TokenType;
@@ -28,6 +29,7 @@ typedef enum {
  * '1' lhs > rhs
  * */
 int token_type_compare(TokenType lhs, TokenType rhs);
+bool token_is_right_associative(TokenType token_type);
 
 // ---------------------------------------------------------
 

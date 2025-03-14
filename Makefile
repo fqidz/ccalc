@@ -10,7 +10,6 @@ ARGS = -xc\
 	   -Wno-covered-switch-default\
 	   -Wno-unsafe-buffer-usage\
 	   -Wno-missing-prototypes\
-	   -Wno-switch-enum\
 
 out:
 	mkdir ./out
