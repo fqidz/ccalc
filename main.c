@@ -25,11 +25,7 @@ int main(void)
         return 1;
 
     tokens_to_postfix(&tokens);
-    for (size_t i = 0; i < tokens.length; i++) {
-        printf("%s ", tokens.items[i].value);
-    }
-    printf("\n");
-
+    printf("%s\n", tokenarr_to_string(&tokens));
     double result = evaluate_postfix_tokens(&tokens);
 
     double integral;

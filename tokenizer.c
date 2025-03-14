@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include "tokenizer.h"
 #include "logging.h"
+#include <string.h>
 
 int token_type_compare(TokenType lhs, TokenType rhs)
 {
@@ -142,13 +143,36 @@ Token tokenarr_pop(TokenArr *tokenarr)
 
 void tokenarr_free(TokenArr *tokenarr)
 {
-    for (size_t i = 0; i <= tokenarr->length; i++) {
+    for (size_t i = 0; i < tokenarr->length; i++) {
         token_free(&tokenarr->items[i]);
     }
     free(tokenarr->items);
     tokenarr->items = NULL;
     tokenarr->capacity = 0;
     tokenarr->length = 0;
+}
+
+char *tokenarr_to_string(TokenArr *tokenarr)
+{
+    char *string = calloc(2, sizeof(char));
+    for (size_t i = 0; i < tokenarr->length; i++) {
+        char *current_token_string = tokenarr->items[i].value;
+        // add spaces between tokens
+        if (i != 0) {
+            char *new_token_string =
+                    calloc(strlen(current_token_string) + 2, sizeof(char));
+            strcpy(new_token_string, " ");
+            strcat(new_token_string, current_token_string);
+            string = realloc(string,
+                             strlen(string) + strlen(new_token_string) + 1);
+            strcat(string, new_token_string);
+        } else {
+            string = realloc(string,
+                             strlen(string) + strlen(current_token_string) + 1);
+            strcat(string, current_token_string);
+        }
+    }
+    return string;
 }
 
 void string_remove_spaces(char *restrict str_trimmed,

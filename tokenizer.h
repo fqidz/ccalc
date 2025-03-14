@@ -52,6 +52,7 @@ void tokenarr_init(TokenArr *tokenarr, size_t capacity);
 void tokenarr_append(TokenArr *tokenarr, Token item);
 void tokenarr_free(TokenArr *tokenarr);
 Token tokenarr_pop(TokenArr *tokenarr);
+char *tokenarr_to_string(TokenArr *tokenarr);
 
 // ---------------------------------------------------------
 
