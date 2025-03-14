@@ -6,18 +6,22 @@
 
 #define STRING_SIZE 256
 
-int main(void) {
+int main(void)
+{
     char *input_string = calloc(STRING_SIZE, sizeof(char));
-    TokenArr tokens = {0};
+    TokenArr tokens = { 0 };
 
     printf("Input: \n");
-    if (!fgets(input_string, STRING_SIZE, stdin)) return 1;
+    if (!fgets(input_string, STRING_SIZE, stdin))
+        return 1;
+
     input_string[strcspn(input_string, "\n")] = 0;
 
-    InputStream input_stream = {0};
+    InputStream input_stream = { 0 };
     input_init(&input_stream, input_string);
 
-    if (!input_tokenize(&tokens, &input_stream)) return 1;
+    if (!input_tokenize(&tokens, &input_stream))
+        return 1;
 
     for (size_t i = 0; i < tokens.length; i++) {
         printf("%zu:\t\"", i);
@@ -39,7 +43,6 @@ int main(void) {
         }
         printf("\"\n");
     }
-
 
     return 0;
 }

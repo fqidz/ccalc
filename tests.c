@@ -5,7 +5,8 @@
 #include "tokenizer.h"
 #include "logging.h"
 
-static char* new_string(const char* const string_literal) {
+static char *new_string(const char *const string_literal)
+{
     LOG_ASSERT(strlen(string_literal) > 0);
     char *string = malloc((strlen(string_literal) + 1) * sizeof(char));
     strcpy(string, string_literal);
@@ -74,79 +75,80 @@ static char* new_string(const char* const string_literal) {
 //
 // }
 
-static void test_input_tokenize(void) {
+static void test_input_tokenize(void)
+{
     char *string = new_string("16-12.0/2+(3*2+0.5+0.5)");
 
-    TokenArr tokens = {0};
-    InputStream input_stream = {0};
+    TokenArr tokens = { 0 };
+    InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
     LOG_ASSERT(input_tokenize(&tokens, &input_stream));
     for (size_t i = 0; i < tokens.length; i++) {
         Token token = tokens.items[i];
         switch (i) {
-            case 0:
-                LOG_ASSERT(strcmp(token.value, "16") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 1:
-                LOG_ASSERT(strcmp(token.value, "-") == 0);
-                LOG_ASSERT(token.type == MINUS);
-                break;
-            case 2:
-                LOG_ASSERT(strcmp(token.value, "12.0") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 3:
-                LOG_ASSERT(strcmp(token.value, "/") == 0);
-                LOG_ASSERT(token.type == DIVIDE);
-                break;
-            case 4:
-                LOG_ASSERT(strcmp(token.value, "2") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 5:
-                LOG_ASSERT(strcmp(token.value, "+") == 0);
-                LOG_ASSERT(token.type == PLUS);
-                break;
-            case 6:
-                LOG_ASSERT(strcmp(token.value, "(") == 0);
-                LOG_ASSERT(token.type == LEFT_PAREN);
-                break;
-            case 7:
-                LOG_ASSERT(strcmp(token.value, "3") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 8:
-                LOG_ASSERT(strcmp(token.value, "*") == 0);
-                LOG_ASSERT(token.type == MULTIPLY);
-                break;
-            case 9:
-                LOG_ASSERT(strcmp(token.value, "2") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 10:
-                LOG_ASSERT(strcmp(token.value, "+") == 0);
-                LOG_ASSERT(token.type == PLUS);
-                break;
-            case 11:
-                LOG_ASSERT(strcmp(token.value, "0.5") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 12:
-                LOG_ASSERT(strcmp(token.value, "+") == 0);
-                LOG_ASSERT(token.type == PLUS);
-                break;
-            case 13:
-                LOG_ASSERT(strcmp(token.value, "0.5") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 14:
-                LOG_ASSERT(strcmp(token.value, ")") == 0);
-                LOG_ASSERT(token.type == RIGHT_PAREN);
-                break;
-            default:
-                UNREACHABLE;
+        case 0:
+            LOG_ASSERT(strcmp(token.value, "16") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 1:
+            LOG_ASSERT(strcmp(token.value, "-") == 0);
+            LOG_ASSERT(token.type == MINUS);
+            break;
+        case 2:
+            LOG_ASSERT(strcmp(token.value, "12.0") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 3:
+            LOG_ASSERT(strcmp(token.value, "/") == 0);
+            LOG_ASSERT(token.type == DIVIDE);
+            break;
+        case 4:
+            LOG_ASSERT(strcmp(token.value, "2") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 5:
+            LOG_ASSERT(strcmp(token.value, "+") == 0);
+            LOG_ASSERT(token.type == PLUS);
+            break;
+        case 6:
+            LOG_ASSERT(strcmp(token.value, "(") == 0);
+            LOG_ASSERT(token.type == LEFT_PAREN);
+            break;
+        case 7:
+            LOG_ASSERT(strcmp(token.value, "3") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 8:
+            LOG_ASSERT(strcmp(token.value, "*") == 0);
+            LOG_ASSERT(token.type == MULTIPLY);
+            break;
+        case 9:
+            LOG_ASSERT(strcmp(token.value, "2") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 10:
+            LOG_ASSERT(strcmp(token.value, "+") == 0);
+            LOG_ASSERT(token.type == PLUS);
+            break;
+        case 11:
+            LOG_ASSERT(strcmp(token.value, "0.5") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 12:
+            LOG_ASSERT(strcmp(token.value, "+") == 0);
+            LOG_ASSERT(token.type == PLUS);
+            break;
+        case 13:
+            LOG_ASSERT(strcmp(token.value, "0.5") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 14:
+            LOG_ASSERT(strcmp(token.value, ")") == 0);
+            LOG_ASSERT(token.type == RIGHT_PAREN);
+            break;
+        default:
+            UNREACHABLE;
         }
     }
 
@@ -162,33 +164,34 @@ static void test_input_tokenize(void) {
     for (size_t i = 0; i < tokens.length; i++) {
         Token token = tokens.items[i];
         switch (i) {
-            case 0:
-                LOG_ASSERT(strcmp(token.value, "2.2") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 1:
-                LOG_ASSERT(strcmp(token.value, "+") == 0);
-                LOG_ASSERT(token.type == PLUS);
-                break;
-            case 2:
-                LOG_ASSERT(strcmp(token.value, "44.4") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            case 3:
-                LOG_ASSERT(strcmp(token.value, "-") == 0);
-                LOG_ASSERT(token.type == MINUS);
-                break;
-            case 4:
-                LOG_ASSERT(strcmp(token.value, "3") == 0);
-                LOG_ASSERT(token.type == NUMBER);
-                break;
-            default:
-                UNREACHABLE;
+        case 0:
+            LOG_ASSERT(strcmp(token.value, "2.2") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 1:
+            LOG_ASSERT(strcmp(token.value, "+") == 0);
+            LOG_ASSERT(token.type == PLUS);
+            break;
+        case 2:
+            LOG_ASSERT(strcmp(token.value, "44.4") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        case 3:
+            LOG_ASSERT(strcmp(token.value, "-") == 0);
+            LOG_ASSERT(token.type == MINUS);
+            break;
+        case 4:
+            LOG_ASSERT(strcmp(token.value, "3") == 0);
+            LOG_ASSERT(token.type == NUMBER);
+            break;
+        default:
+            UNREACHABLE;
         }
     }
 }
 
-static void test_string_remove_all_whitespace(void) {
+static void test_string_remove_all_whitespace(void)
+{
     char *string = new_string(" f o   o b    a r  ");
 
     char *trimmed_string = malloc(strlen(string) * sizeof(char));
@@ -199,7 +202,8 @@ static void test_string_remove_all_whitespace(void) {
     LOG_ASSERT(strcmp(trimmed_string, "foobar") == 0);
 }
 
-static void test_string_append_char(void) {
+static void test_string_append_char(void)
+{
     char *string = new_string("chocobar");
 
     string_append_char(string, 's');
@@ -221,10 +225,11 @@ static void test_string_append_char(void) {
     LOG_ASSERT(strcmp(string, "meow") == 0);
 }
 
-static void test_input_next(void) {
+static void test_input_next(void)
+{
     char *string = new_string("test");
 
-    InputStream input_stream = {0};
+    InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
     LOG_ASSERT(input_next(&input_stream) == 't');
@@ -233,10 +238,11 @@ static void test_input_next(void) {
     LOG_ASSERT(input_next(&input_stream) == 't');
 }
 
-static void test_input_peek(void) {
+static void test_input_peek(void)
+{
     char *string = new_string("foobar");
 
-    InputStream input_stream = {0};
+    InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
     LOG_ASSERT(input_peek(&input_stream) == 'f');
@@ -258,25 +264,27 @@ static void test_input_peek(void) {
     LOG_ASSERT(input_next(&input_stream) == 'r');
 }
 
-static void test_input_is_eof(void) {
+static void test_input_is_eof(void)
+{
     char *string = new_string("12345");
 
-    InputStream input_stream = {0};
+    InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
-    (void) input_next(&input_stream);
-    (void) input_next(&input_stream);
-    (void) input_next(&input_stream);
-    (void) input_next(&input_stream);
-    (void) input_next(&input_stream);
+    (void)input_next(&input_stream);
+    (void)input_next(&input_stream);
+    (void)input_next(&input_stream);
+    (void)input_next(&input_stream);
+    (void)input_next(&input_stream);
 
     LOG_ASSERT(input_is_eof(&input_stream));
 }
 
-static void test_input_with_whitespace(void) {
+static void test_input_with_whitespace(void)
+{
     char *string = new_string("b  a rt  ");
 
-    InputStream input_stream = {0};
+    InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
     LOG_ASSERT(input_next(&input_stream) == 'b');
@@ -286,10 +294,11 @@ static void test_input_with_whitespace(void) {
     LOG_ASSERT(input_is_eof(&input_stream));
 }
 
-static void test_input_read_number(void) {
+static void test_input_read_number(void)
+{
     char *string = new_string("1.02 + 232 - .98");
 
-    InputStream input_stream = {0};
+    InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
     Token first_number = input_read_number(&input_stream);
@@ -313,10 +322,11 @@ static void test_input_read_number(void) {
     LOG_ASSERT(third_number.type == NUMBER);
 }
 
-static void test_input_is_symbol(void) {
+static void test_input_is_symbol(void)
+{
     char *string = new_string("+-*xX/");
 
-    InputStream input_stream = {0};
+    InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
     while (!input_is_eof(&input_stream)) {
@@ -336,10 +346,11 @@ static void test_input_is_symbol(void) {
     LOG_ASSERT(is_symbol(input_next(&input_stream)));
 }
 
-static void test_input_is_bracket(void) {
+static void test_input_is_bracket(void)
+{
     char *string = new_string("())())))((())");
 
-    InputStream input_stream = {0};
+    InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
     while (!input_is_eof(&input_stream)) {
@@ -354,27 +365,27 @@ static void test_input_is_bracket(void) {
         size_t current_pos = input_stream.pos;
         char next_char = input_next(&input_stream);
         switch (current_pos) {
-            case 0:
-            case 1:
-            case 2:
-            case 4:
-            case 5:
-            case 7:
-            case 8:
-                LOG_ASSERT(!is_bracket(next_char));
-                break;
-            case 3:
-            case 6:
-                LOG_ASSERT(is_bracket(next_char));
-                break;
-            default:
-                UNREACHABLE;
+        case 0:
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+        case 7:
+        case 8:
+            LOG_ASSERT(!is_bracket(next_char));
+            break;
+        case 3:
+        case 6:
+            LOG_ASSERT(is_bracket(next_char));
+            break;
+        default:
+            UNREACHABLE;
         }
     }
 }
 
-
-static void test_all(void) {
+static void test_all(void)
+{
     // test_token_type_compare();
     test_input_tokenize();
 
@@ -391,6 +402,7 @@ static void test_all(void) {
     test_input_is_bracket();
 }
 
-int main(void) {
+int main(void)
+{
     test_all();
 }
