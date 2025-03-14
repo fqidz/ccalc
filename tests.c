@@ -242,8 +242,9 @@ static void test_input_is_bracket(void) {
     input_init(&input_stream, string);
 
     while (!input_is_eof(&input_stream)) {
+        char current_pos = input_stream.pos;
         char next_char = input_next(&input_stream);
-        switch (next_char) {
+        switch (current_pos) {
             case 0:
             case 1:
             case 2:
@@ -251,7 +252,7 @@ static void test_input_is_bracket(void) {
             case 5:
             case 7:
             case 8:
-                LOG_ASSERT(is_bracket(next_char));
+                LOG_ASSERT(!is_bracket(next_char));
                 break;
             case 3:
             case 6:
