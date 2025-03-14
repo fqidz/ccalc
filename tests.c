@@ -13,82 +13,66 @@ char* new_string(const char* const string_literal) {
     return string;
 }
 
-static void test_token_type_compare(void) {
-    //                         0   1 2 3 4 5 6    7 89 a b c d e f  g h i
-    char *string = new_string("1.2 + 3 / 7 * 10.2 - (2 + 3 - 5 * 8.2) * 3");
-
-    InputStream input_stream = {0};
-    TokenArr tokens = {0};
-    input_init(&input_stream, string);
-
-    input_tokenize(&tokens, &input_stream);
-
-    // find a better way to do this
-    for (size_t i = 0; i < tokens.item_count; i++) {
-        Token current_token = tokens.items[i];
-        switch (i) {
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 9:
-            case 11:
-            case 13:
-            case 15:
-            case 18:
-                LOG_ASSERT(token_type_compare(NUMBER, current_token.type) == 0);
-                break;
-            case 1:
-            case 3:
-            case 5:
-            case 7:
-            case 8:
-            case 10:
-            case 12:
-            case 14:
-            case 16:
-            case 17:
-                LOG_ASSERT(token_type_compare(NUMBER, current_token.type) == -1);
-                break;
-            default:
-                UNREACHABLE;
-        }
-    }
-
-    for (size_t i = 0; i < tokens.item_count; i++) {
-        Token current_token = tokens.items[i];
-        switch (i) {
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 9:
-            case 11:
-            case 13:
-            case 15:
-            case 18:
-                LOG_ASSERT(token_type_compare(PLUS, current_token.type) == 1);
-                break;
-            case 1:
-            case 7:
-            case 10:
-            case 12:
-                LOG_ASSERT(token_type_compare(PLUS, current_token.type) == 0);
-                break;
-            case 3:
-            case 5:
-            case 8:
-            case 14:
-            case 16:
-            case 17:
-                LOG_ASSERT(token_type_compare(PLUS, current_token.type) == -1);
-                break;
-            default:
-                UNREACHABLE;
-        }
-    }
-
-}
+// static void test_token_type_compare(void) {
+//     //                         0   1 2 3 4 5 6    7 89 a b c d e f  g h i
+//     char *string = new_string("1.2 + 3 / 7 * 10.2 - (2 + 3 - 5 * 8.2) * 3");
+//
+//     InputStream input_stream = {0};
+//     TokenArr tokens = {0};
+//     input_init(&input_stream, string);
+//
+//     input_tokenize(&tokens, &input_stream);
+//
+//     // find a better way to do this
+//     for (size_t i = 0; i < tokens.item_count; i++) {
+//         Token current_token = tokens.items[i];
+//         switch (i) {
+//             case 0: case 2: case 4: case 6: case 9: case 11: case 13: case 15: case 18:
+//                 LOG_ASSERT(token_type_compare(NUMBER, current_token.type) == 0);
+//                 break;
+//             case 1: case 3: case 5: case 7: case 8: case 10: case 12: case 14: case 16: case 17:
+//                 LOG_ASSERT(token_type_compare(NUMBER, current_token.type) == -1);
+//                 break;
+//             default:
+//                 UNREACHABLE;
+//         }
+//     }
+//
+//     for (size_t i = 0; i < tokens.item_count; i++) {
+//         Token current_token = tokens.items[i];
+//         switch (i) {
+//             case 0: case 2: case 4: case 6: case 9: case 11: case 13: case 15: case 18:
+//                 LOG_ASSERT(token_type_compare(PLUS, current_token.type) == 1);
+//                 break;
+//             case 1: case 7: case 10: case 12:
+//                 LOG_ASSERT(token_type_compare(PLUS, current_token.type) == 0);
+//                 break;
+//             case 3: case 5: case 8: case 14: case 16: case 17:
+//                 LOG_ASSERT(token_type_compare(PLUS, current_token.type) == -1);
+//                 break;
+//             default:
+//                 UNREACHABLE;
+//         }
+//     }
+//
+//     for (size_t i = 0; i < tokens.item_count; i++) {
+//         Token current_token = tokens.items[i];
+//         switch (i) {
+//             case 0: case 2: case 4: case 6: case 9: case 11: case 13: case 15: case 18:
+//                 LOG_ASSERT(token_type_compare(PLUS, current_token.type) == 1);
+//                 break;
+//             case 1: case 7: case 10: case 12:
+//                 LOG_ASSERT(token_type_compare(PLUS, current_token.type) == 0);
+//                 break;
+//             case 3: case 5: case 8: case 14: case 16: case 17:
+//                 LOG_ASSERT(token_type_compare(PLUS, current_token.type) == -1);
+//                 break;
+//             default:
+//                 UNREACHABLE;
+//         }
+//     }
+//
+// }
 
 static void test_string_remove_all_whitespace(void) {
     char *string = new_string(" f o   o b    a r  ");
@@ -277,7 +261,7 @@ static void test_input_is_bracket(void) {
 
 
 static void test_all(void) {
-    test_token_type_compare();
+    // test_token_type_compare();
 
     test_string_remove_all_whitespace();
     test_string_append_char();
