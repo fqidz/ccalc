@@ -281,7 +281,10 @@ bool input_tokenize(TokenArr *tokens, InputStream *input) {
         } else if (is_bracket(peeked_char)) {
             token = input_read_bracket(input);
         } else {
-            printf("[ERROR] %zu: Invalid character '%c'\n", input->pos, peeked_char);
+            fprintf(stderr, RED BOLD "[ERROR]" RESET "\n");
+            fprintf(stderr, "%s\n", input->string);
+            fprintf(stderr, "%*c^\n", (int) input->pos, ' ');
+            fprintf(stderr, RED BOLD "%zu: Invalid character '%c'" RESET "\n", input->pos, peeked_char);
             return false;
         }
 
