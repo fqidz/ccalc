@@ -3,13 +3,14 @@
 #include <string.h>
 #include "tokenizer.h"
 
+#define STRING_SIZE 256
 
 int main(void) {
-    char input_string[256];
+    char *input_string = calloc(STRING_SIZE, sizeof(char));
     TokenArr tokens = {0};
 
     printf("Input: \n");
-    if (!fgets(input_string, sizeof(input_string) / sizeof(input_string[0]), stdin)) return 1;
+    if (!fgets(input_string, STRING_SIZE, stdin)) return 1;
     input_string[strcspn(input_string, "\n")] = 0;
 
     InputStream input_stream = {0};

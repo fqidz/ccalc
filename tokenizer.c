@@ -100,16 +100,16 @@ void tokenarr_free(TokenArr *tokenarr) {
 }
 
 void string_remove_spaces (char* restrict str_trimmed, char* restrict str_untrimmed) {
-  while (*str_untrimmed != '\0')
-  {
-    if(!isspace(*str_untrimmed))
+    while (*str_untrimmed != '\0')
     {
-      *str_trimmed = *str_untrimmed;
-      str_trimmed++;
+        if(!isspace(*str_untrimmed))
+        {
+            *str_trimmed = *str_untrimmed;
+            str_trimmed++;
+        }
+        str_untrimmed++;
     }
-    str_untrimmed++;
-  }
-  *str_trimmed = '\0';
+    *str_trimmed = '\0';
 }
 
 void string_append_char(char *string, char c) {
@@ -131,6 +131,7 @@ void input_free(InputStream *input) {
 }
 
 void input_init(InputStream *input, char *string) {
+    LOG_ASSERT(strlen(string) > 0);
     char *trimmed_string = malloc(strlen(string) * sizeof(char));
     string_remove_spaces(trimmed_string, string);
     free(string);
@@ -281,10 +282,10 @@ bool input_tokenize(TokenArr *tokens, InputStream *input) {
         } else if (is_bracket(peeked_char)) {
             token = input_read_bracket(input);
         } else {
-            fprintf(stderr, RED BOLD "[ERROR]" RESET "\n");
+            fprintf(stderr, RED BOLD "[ERROR]:" RESET " ");
             fprintf(stderr, "%s\n", input->string);
-            fprintf(stderr, "%*c^\n", (int) input->pos, ' ');
-            fprintf(stderr, RED BOLD "%zu: Invalid character '%c'" RESET "\n", input->pos, peeked_char);
+            fprintf(stderr, "%*c^\n", (int) input->pos + 9, ' ');
+            fprintf(stderr, RED BOLD "char %zu: Invalid character '%c'" RESET "\n", input->pos, peeked_char);
             return false;
         }
 

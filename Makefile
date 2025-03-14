@@ -36,7 +36,7 @@ test: tests
 
 .PHONY: run_and_test
 run_and_test: main tests
-	out/tests
+	out/tests 2> /dev/null
 	out/main
 
 
