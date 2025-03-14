@@ -12,9 +12,11 @@ int token_type_compare(TokenType lhs, TokenType rhs) {
                 case MINUS:
                 case MULTIPLY:
                 case DIVIDE:
+                    return -1;
                 case LEFT_PAREN:
                 case RIGHT_PAREN:
-                    return -1;
+                default:
+                    UNREACHABLE;
             }
         case PLUS:
         case MINUS:
@@ -26,9 +28,11 @@ int token_type_compare(TokenType lhs, TokenType rhs) {
                     return 0;
                 case MULTIPLY:
                 case DIVIDE:
+                    return -1;
                 case LEFT_PAREN:
                 case RIGHT_PAREN:
-                    return -1;
+                default:
+                    UNREACHABLE;
             }
         case MULTIPLY:
         case DIVIDE:
@@ -42,20 +46,14 @@ int token_type_compare(TokenType lhs, TokenType rhs) {
                     return 0;
                 case LEFT_PAREN:
                 case RIGHT_PAREN:
-                    return -1;
+                default:
+                    UNREACHABLE;
             }
         case LEFT_PAREN:
         case RIGHT_PAREN:
             switch (rhs) {
-                case NUMBER:
-                case PLUS:
-                case MINUS:
-                case MULTIPLY:
-                case DIVIDE:
-                    return 1;
-                case LEFT_PAREN:
-                case RIGHT_PAREN:
-                    return 0;
+                default:
+                    UNREACHABLE;
             }
     }
 }

@@ -11,19 +11,25 @@ tokenizer.o: out tokenizer.c tokenizer.h logging.h
 libtokenizer.a: tokenizer.o
 	ar rcs out/libtokenizer.a out/tokenizer.o
 
+parse.o: out parse.c parse.h
+	$(CC) $(ARGS) -c parse.c -o out/parse.o
 
-main.o: out main.c libtokenizer.a
+libparse.a: parse.o
+	ar rcs out/libparse.a out/parse.o
+
+
+main.o: out main.c
 	$(CC) $(ARGS) -c main.c -o out/main.o
 
-tests.o: out tests.c libtokenizer.a logging.h
+tests.o: out tests.c  logging.h
 	$(CC) $(ARGS) -c tests.c -o out/tests.o
 
 
-main: main.o
-	$(CC) -Lout out/main.o -o out/main -ltokenizer
+main: main.o libtokenizer.a libparse.a
+	$(CC) -Lout out/main.o -o out/main -ltokenizer -lparse
 
-tests: tests.o
-	$(CC) -Lout out/tests.o -o out/tests -ltokenizer
+tests: tests.o libtokenizer.a libparse.a
+	$(CC) -Lout out/tests.o -o out/tests -ltokenizer -lparse
 
 
 .PHONY: run

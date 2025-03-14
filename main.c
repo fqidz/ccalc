@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "tokenizer.h"
+#include "parse.h"
 
 #define STRING_SIZE 256
 
@@ -26,6 +27,19 @@ int main(void) {
         }
         printf("\"\n");
     }
+    printf("\n");
+
+    tokens_to_postfix(&tokens);
+
+    for (size_t i = 0; i < tokens.item_count; i++) {
+        printf("%zu:\t\"", i);
+        char *current_token_name = tokens.items[i].value;
+        for (size_t j = 0; j < strlen(current_token_name); j++) {
+            printf("%c", current_token_name[j]);
+        }
+        printf("\"\n");
+    }
+
 
     return 0;
 }
