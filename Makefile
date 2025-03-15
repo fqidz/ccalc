@@ -1,4 +1,5 @@
 CC = clang
+# CC = hfuzz-cc
 ARGS = -xc\
 	   -std=c99\
 	   -g\
@@ -9,7 +10,7 @@ ARGS = -xc\
 	   -Wno-declaration-after-statement\
 	   -Wno-covered-switch-default\
 	   -Wno-unsafe-buffer-usage\
-	   -Wno-missing-prototypes\
+	   -Wno-missing-prototypes
 
 out:
 	mkdir ./out
