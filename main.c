@@ -6,7 +6,7 @@
 #include "tokenizer.h"
 #include "parse.h"
 
-#define STRING_SIZE 256
+#define STRING_SIZE 2000
 
 int main(void)
 {
