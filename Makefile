@@ -15,7 +15,7 @@ out:
 	mkdir ./out
 
 
-tokenizer.o: out tokenizer.c tokenizer.h logging.h
+tokenizer.o: out tokenizer.c tokenizer.h
 	$(CC) $(ARGS) -c tokenizer.c -o out/tokenizer.o
 
 libtokenizer.a: tokenizer.o
@@ -27,19 +27,25 @@ parse.o: out parse.c parse.h
 libparse.a: parse.o
 	ar rcs out/libparse.a out/parse.o
 
+logging.o: out logging.c logging.h
+	$(CC) $(ARGS) -c logging.c -o out/logging.o
+
+liblogging.a: logging.o
+	ar rcs out/liblogging.a out/logging.o
+
 
 main.o: out main.c
 	$(CC) $(ARGS) -c main.c -o out/main.o
 
-tests.o: out tests.c  logging.h
+tests.o: out tests.c
 	$(CC) $(ARGS) -c tests.c -o out/tests.o
 
 
-main: main.o libtokenizer.a libparse.a
-	$(CC) -Lout out/main.o -o out/main -ltokenizer -lparse -lm
+main: main.o libtokenizer.a libparse.a liblogging.a
+	$(CC) -Lout out/main.o -o out/main -ltokenizer -lparse -llogging -lm
 
-tests: tests.o libtokenizer.a libparse.a
-	$(CC) -Lout out/tests.o -o out/tests -ltokenizer -lparse -lm
+tests: tests.o libtokenizer.a libparse.a liblogging.a
+	$(CC) -Lout out/tests.o -o out/tests -ltokenizer -lparse -llogging -lm
 
 
 .PHONY: run

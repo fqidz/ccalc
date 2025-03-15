@@ -103,7 +103,8 @@ static void test_input_tokenize(void)
     InputStream input_stream = { 0 };
     input_init(&input_stream, string);
 
-    LOG_ASSERT(input_tokenize(&tokens, &input_stream));
+    Error tokenize_error = input_tokenize(&tokens, &input_stream);
+    LOG_ASSERT(tokenize_error.type == NO_ERROR);
     for (size_t i = 0; i < tokens.length; i++) {
         Token token = tokens.items[i];
         switch (i) {
@@ -178,7 +179,9 @@ static void test_input_tokenize(void)
     input_free(&input_stream);
     input_init(&input_stream, string);
 
-    LOG_ASSERT(!input_tokenize(&tokens, &input_stream));
+    tokenize_error = input_tokenize(&tokens, &input_stream);
+    LOG_ASSERT(tokenize_error.type == INVALID_CHAR);
+    LOG_ASSERT(tokenize_error.char_pos == 10);
 
     LOG_ASSERT(tokens.length == 5);
     for (size_t i = 0; i < tokens.length; i++) {

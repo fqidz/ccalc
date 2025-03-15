@@ -1,6 +1,7 @@
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
+#include "logging.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -83,6 +84,6 @@ void string_append_char(char *string, char c);
 bool is_symbol(char c);
 bool is_bracket(char c);
 
-bool input_tokenize(TokenArr *tokens, InputStream *input);
+Error input_tokenize(TokenArr *tokens, InputStream *input);
 
 #endif // TOKENIZER_H

@@ -1,3 +1,4 @@
+#include "logging.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -12,7 +13,7 @@ int main(void)
     char *input_string = calloc(STRING_SIZE, sizeof(char));
     TokenArr tokens = { 0 };
 
-    printf("Input: \n");
+    printf("Input: ");
     if (!fgets(input_string, STRING_SIZE, stdin))
         return 1;
 
@@ -21,11 +22,19 @@ int main(void)
     InputStream input_stream = { 0 };
     input_init(&input_stream, input_string);
 
-    if (!input_tokenize(&tokens, &input_stream))
+    Error tokenize_error = input_tokenize(&tokens, &input_stream);
+    switch (tokenize_error.type) {
+    case INVALID_CHAR:
+        fprintf(stderr, "%s\n", error_to_string(tokenize_error));
         return 1;
+    case NO_ERROR:
+        break;
+    default:
+        UNREACHABLE;
+    }
 
     tokens_to_postfix(&tokens);
-    printf("%s\n", tokenarr_to_string(&tokens));
+    // printf("%s\n", tokenarr_to_string(&tokens));
     double result = evaluate_postfix_tokens(&tokens);
 
     double integral;

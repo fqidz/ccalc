@@ -365,7 +365,7 @@ Token input_read_bracket(InputStream *input)
     return token;
 }
 
-bool input_tokenize(TokenArr *tokens, InputStream *input)
+Error input_tokenize(TokenArr *tokens, InputStream *input)
 {
     while (!input_is_eof(input)) {
         char peeked_char = input_peek(input);
@@ -377,17 +377,19 @@ bool input_tokenize(TokenArr *tokens, InputStream *input)
         } else if (is_bracket(peeked_char)) {
             token = input_read_bracket(input);
         } else {
-            fprintf(stderr, RED BOLD "[ERROR]:" RESET " ");
-            fprintf(stderr, "%s\n", input->string);
-            fprintf(stderr, "%*c^\n", (int)input->pos + 9, ' ');
-            fprintf(stderr,
-                    RED BOLD "char %zu: Invalid character '%c'" RESET "\n",
-                    input->pos, peeked_char);
-            return false;
+            return (Error){
+                .type = INVALID_CHAR,
+                .input_string = input->string,
+                .char_pos = input->pos,
+            };
         }
 
         tokenarr_append(tokens, token);
     }
 
-    return true;
+    return (Error){
+        .type = NO_ERROR,
+        .input_string = NULL,
+        .char_pos = 0,
+    };
 }
