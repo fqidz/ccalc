@@ -1,9 +1,11 @@
 #include <assert.h>
+#include <math.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include "tokenizer.h"
 #include "logging.h"
+#include "parse.h"
 
 static char *new_string(const char *const string_literal)
 {
@@ -12,6 +14,24 @@ static char *new_string(const char *const string_literal)
     strcpy(string, string_literal);
 
     return string;
+}
+
+static void test_calculator(void)
+{
+    char *string = new_string("3 + 4 x 2 / ( 1 - 5 ) ^ 2 ^ 3");
+
+    TokenArr tokens = { 0 };
+    InputStream input_stream = { 0 };
+    input_init(&input_stream, string);
+
+    input_tokenize(&tokens, &input_stream);
+    tokens_to_postfix(&tokens);
+
+    char *postfix_string = tokenarr_to_string(&tokens);
+
+    double result = evaluate_postfix_tokens(&tokens);
+    LOG_ASSERT(strcmp(postfix_string, "3 4 2 * 1 5 - 2 3 ^ ^ / +") == 0);
+    LOG_ASSERT(fabs(result - 3.000122) < 0.000001);
 }
 
 // static void test_token_type_compare(void) {
@@ -387,6 +407,7 @@ static void test_input_is_bracket(void)
 static void test_all(void)
 {
     // test_token_type_compare();
+    test_calculator();
     test_input_tokenize();
 
     test_string_remove_all_whitespace();

@@ -5,6 +5,7 @@
 
 void tokens_to_postfix(TokenArr *tokens)
 {
+    LOG_ASSERT(tokens->length > 0);
     // shunting yard algorithm
     TokenArr stack = { 0 };
     TokenArr output = { 0 };
@@ -61,6 +62,7 @@ void tokens_to_postfix(TokenArr *tokens)
 
 double evaluate_postfix_tokens(TokenArr *tokens)
 {
+    LOG_ASSERT(tokens->length > 0);
     double *stack;
     stack = calloc(tokens->length, sizeof(double));
     int stack_length = 0;
