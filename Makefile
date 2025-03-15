@@ -37,8 +37,8 @@ liblogging.a: logging.o
 main.o: out main.c
 	$(CC) $(ARGS) -c main.c -o out/main.o
 
-tests.o: out tests.c
-	$(CC) $(ARGS) -c tests.c -o out/tests.o
+tests.o: out tests/tests.c
+	$(CC) $(ARGS) -c tests/tests.c -o out/tests.o
 
 
 main: main.o libtokenizer.a libparse.a liblogging.a

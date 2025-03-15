@@ -3,9 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "tokenizer.h"
-#include "logging.h"
-#include "parse.h"
+#include "../tokenizer.h"
+#include "../logging.h"
+#include "../parse.h"
 
 static char *new_string(const char *const string_literal)
 {

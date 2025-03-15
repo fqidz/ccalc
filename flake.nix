@@ -22,6 +22,7 @@
         pkgs.glib
 
         pkgs.hyperfine
+        pkgs.honggfuzz
 
         # manpaths dont appear in devshells
         # https://github.com/NixOS/nixpkgs/pull/234367
