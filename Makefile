@@ -39,7 +39,7 @@ main: main.o libtokenizer.a libparse.a
 	$(CC) -Lout out/main.o -o out/main -ltokenizer -lparse -lm
 
 tests: tests.o libtokenizer.a libparse.a
-	$(CC) -Lout out/tests.o -o out/tests -ltokenizer -lparse
+	$(CC) -Lout out/tests.o -o out/tests -ltokenizer -lparse -lm
 
 
 .PHONY: run
@@ -52,7 +52,7 @@ test: tests
 
 .PHONY: run_and_test
 run_and_test: main tests
-	out/tests 2> /dev/null
+	out/tests
 	out/main
 
 
