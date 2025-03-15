@@ -23,14 +23,9 @@ int main(void)
     input_init(&input_stream, input_string);
 
     Error tokenize_error = input_tokenize(&tokens, &input_stream);
-    switch (tokenize_error.type) {
-    case INVALID_CHAR:
+    if (tokenize_error.type != NO_ERROR) {
         fprintf(stderr, "%s\n", error_to_string(tokenize_error));
         return 1;
-    case NO_ERROR:
-        break;
-    default:
-        UNREACHABLE;
     }
 
     tokens_to_postfix(&tokens);

@@ -269,7 +269,7 @@ bool is_bracket(char c)
     }
 }
 
-Token input_read_symbol(InputStream *input)
+Error input_read_symbol(TokenArr *tokens, InputStream *input)
 {
     LOG_ASSERT(!input_is_eof(input));
     LOG_ASSERT(is_symbol(input_peek(input)));
@@ -305,10 +305,15 @@ Token input_read_symbol(InputStream *input)
         UNREACHABLE;
     }
 
-    return token;
+    tokenarr_append(tokens, token);
+    return (Error){
+        .type = NO_ERROR,
+        .input_string = NULL,
+        .char_pos = 0,
+    };
 }
 
-Token input_read_number(InputStream *input)
+Error input_read_number(TokenArr *tokens, InputStream *input)
 {
     LOG_ASSERT(!input_is_eof(input));
     LOG_ASSERT(isdigit(input_peek(input)) || input_peek(input) == '.');
@@ -327,8 +332,11 @@ Token input_read_number(InputStream *input)
                 string_append_char(token.value, next_char);
                 has_dot = true;
             } else {
-                // TODO: error
-                exit(1);
+                return (Error){
+                    .type = NUMBER_EXTRA_DOT,
+                    .input_string = input->string,
+                    .char_pos = input->pos - 1,
+                };
             }
         }
 
@@ -337,10 +345,15 @@ Token input_read_number(InputStream *input)
         }
     }
 
-    return token;
+    tokenarr_append(tokens, token);
+    return (Error){
+        .type = NO_ERROR,
+        .input_string = NULL,
+        .char_pos = 0,
+    };
 }
 
-Token input_read_bracket(InputStream *input)
+Error input_read_bracket(TokenArr *tokens, InputStream *input)
 {
     LOG_ASSERT(!input_is_eof(input));
     LOG_ASSERT(is_bracket(input_peek(input)));
@@ -362,20 +375,25 @@ Token input_read_bracket(InputStream *input)
         UNREACHABLE;
     }
 
-    return token;
+    tokenarr_append(tokens, token);
+    return (Error){
+        .type = NO_ERROR,
+        .input_string = NULL,
+        .char_pos = 0,
+    };
 }
 
 Error input_tokenize(TokenArr *tokens, InputStream *input)
 {
     while (!input_is_eof(input)) {
         char peeked_char = input_peek(input);
-        Token token = { 0 };
+        Error token_error = { 0 };
         if (isdigit(peeked_char) || peeked_char == '.') {
-            token = input_read_number(input);
+            token_error = input_read_number(tokens, input);
         } else if (is_symbol(peeked_char)) {
-            token = input_read_symbol(input);
+            token_error = input_read_symbol(tokens, input);
         } else if (is_bracket(peeked_char)) {
-            token = input_read_bracket(input);
+            token_error = input_read_bracket(tokens, input);
         } else {
             return (Error){
                 .type = INVALID_CHAR,
@@ -384,7 +402,9 @@ Error input_tokenize(TokenArr *tokens, InputStream *input)
             };
         }
 
-        tokenarr_append(tokens, token);
+        if (token_error.type != NO_ERROR) {
+            return token_error;
+        }
     }
 
     return (Error){

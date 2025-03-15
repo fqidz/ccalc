@@ -69,9 +69,9 @@ char input_next(InputStream *input);
 char input_peek(InputStream *input);
 bool input_is_eof(InputStream *input);
 
-Token input_read_symbol(InputStream *input);
-Token input_read_number(InputStream *input);
-Token input_read_bracket(InputStream *input);
+Error input_read_symbol(TokenArr *tokens, InputStream *input);
+Error input_read_number(TokenArr *tokens, InputStream *input);
+Error input_read_bracket(TokenArr *tokens, InputStream *input);
 
 // ---------------------------------------------------------
 
