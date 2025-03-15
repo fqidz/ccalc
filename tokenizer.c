@@ -188,19 +188,19 @@ void string_remove_spaces(char *restrict str_trimmed,
     *str_trimmed = '\0';
 }
 
-void string_append_char(char *string, char c)
+void string_append_char(char **string, char c)
 {
     char *c_as_string = calloc(2, sizeof(char));
     c_as_string[0] = c;
     LOG_ASSERT(c_as_string[1] == '\0');
 
-    char *tmp = realloc(string, (strlen(string) + strlen(c_as_string) + 1) *
-                                        sizeof(char));
-    if (!tmp)
-        exit(1);
+    char *tmp = realloc(*string, (strlen(*string) + 2) * sizeof(char));
+    if (!tmp) {
+        UNREACHABLE;
+    }
 
-    string = tmp;
-    strcat(string, c_as_string);
+    strcat(tmp, c_as_string);
+    *string = tmp;
 }
 
 void input_free(InputStream *input)
@@ -326,10 +326,10 @@ Error input_read_number(TokenArr *tokens, InputStream *input)
     while (!input_is_eof(input)) {
         char next_char = input_next(input);
         if (isdigit(next_char)) {
-            string_append_char(token.value, next_char);
+            string_append_char(&token.value, next_char);
         } else if (next_char == '.') {
             if (!has_dot) {
-                string_append_char(token.value, next_char);
+                string_append_char(&token.value, next_char);
                 has_dot = true;
             } else {
                 return (Error){
@@ -362,7 +362,7 @@ Error input_read_bracket(TokenArr *tokens, InputStream *input)
     char next_char = input_next(input);
 
     token.value = calloc(2, sizeof(char));
-    string_append_char(token.value, next_char);
+    string_append_char(&token.value, next_char);
 
     switch (next_char) {
     case '(':
