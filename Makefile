@@ -1,5 +1,4 @@
 # CC = clang
-# CC = /nix/store/mzb01rbsz9hp3rx4sbppz5dwqkw5swhm-honggfuzz-2.6/bin/hfuzz-cc
 CC = hfuzz-cc
 ARGS = -xc\
 	   -std=c99\
