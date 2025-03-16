@@ -36,6 +36,7 @@ bool token_is_right_associative(TokenType token_type);
 
 typedef struct {
     char *value;
+    size_t pos;
     TokenType type;
 } Token;
 

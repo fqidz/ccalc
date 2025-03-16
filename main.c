@@ -11,7 +11,6 @@
 int main(void)
 {
     char *input_string = calloc(STRING_SIZE, sizeof(char));
-    TokenArr tokens = { 0 };
 
     printf("Input: ");
     if (!fgets(input_string, STRING_SIZE, stdin))
@@ -22,15 +21,25 @@ int main(void)
     InputStream input_stream = { 0 };
     input_init(&input_stream, input_string);
 
+    TokenArr tokens = { 0 };
     Error tokenize_error = input_tokenize(&tokens, &input_stream);
     if (tokenize_error.type != NO_ERROR) {
         fprintf(stderr, "%s\n", error_to_string(tokenize_error));
         return 1;
     }
 
-    tokens_to_postfix(&tokens);
-    // printf("%s\n", tokenarr_to_string(&tokens));
-    double result = evaluate_postfix_tokens(&tokens);
+    Error postfix_error = tokens_to_postfix(&tokens, input_stream.string);
+    if (postfix_error.type != NO_ERROR) {
+        fprintf(stderr, "%s\n", error_to_string(postfix_error));
+        return 1;
+    }
+
+    double result = 0.0;
+    Error evaluate_error = evaluate_postfix_tokens(&result, &tokens);
+    if (evaluate_error.type != NO_ERROR) {
+        fprintf(stderr, "%s\n", error_to_string(evaluate_error));
+        return 1;
+    }
 
     double integral;
     double fractional = fabs(modf(result, &integral));

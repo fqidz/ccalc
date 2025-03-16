@@ -30,6 +30,7 @@ typedef enum {
     NO_ERROR,
     INVALID_CHAR,
     NUMBER_EXTRA_DOT,
+    EXTRA_BRACKET,
 } ErrorType;
 
 typedef struct {

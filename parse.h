@@ -2,7 +2,7 @@
 #define PARSE_H
 #include "tokenizer.h"
 
-void tokens_to_postfix(TokenArr *tokens);
-double evaluate_postfix_tokens(TokenArr *tokens);
+Error tokens_to_postfix(TokenArr *tokens, char *input_string);
+Error evaluate_postfix_tokens(double *result, TokenArr *tokens);
 
 #endif /* ifndef PARSE_H */

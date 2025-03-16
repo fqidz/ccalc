@@ -273,18 +273,18 @@ Error input_read_symbol(TokenArr *tokens, InputStream *input)
 {
     LOG_ASSERT(!input_is_eof(input));
     LOG_ASSERT(is_symbol(input_peek(input)));
-    Token token = { 0 };
-    token.value = malloc(2 * sizeof(char));
-    token.value[1] = '\0';
+    char next_char = input_next(input);
 
-    switch (input_next(input)) {
+    Token token = { 0 };
+    token.value = calloc(2, sizeof(char));
+    token.value[0] = next_char;
+    token.pos = input->pos - 1;
+
+    switch (next_char) {
     case '+':
-        // might be undefined behaviour cause its a string literal?
-        token.value[0] = '+';
         token.type = PLUS;
         break;
     case '-':
-        token.value[0] = '-';
         token.type = MINUS;
         break;
     case '*':
@@ -294,11 +294,9 @@ Error input_read_symbol(TokenArr *tokens, InputStream *input)
         token.type = MULTIPLY;
         break;
     case '/':
-        token.value[0] = '/';
         token.type = DIVIDE;
         break;
     case '^':
-        token.value[0] = '^';
         token.type = POWER;
         break;
     default:
@@ -320,6 +318,7 @@ Error input_read_number(TokenArr *tokens, InputStream *input)
 
     Token token = { 0 };
     token.value = calloc(2, sizeof(char));
+    token.pos = input->pos;
     token.type = NUMBER;
 
     bool has_dot = false;
@@ -358,10 +357,12 @@ Error input_read_bracket(TokenArr *tokens, InputStream *input)
     LOG_ASSERT(!input_is_eof(input));
     LOG_ASSERT(is_bracket(input_peek(input)));
 
-    Token token = { 0 };
     char next_char = input_next(input);
 
+    Token token = { 0 };
+    token.pos = input->pos - 1;
     token.value = calloc(2, sizeof(char));
+
     string_append_char(&token.value, next_char);
 
     switch (next_char) {

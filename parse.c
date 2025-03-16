@@ -3,12 +3,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-void tokens_to_postfix(TokenArr *tokens)
+Error tokens_to_postfix(TokenArr *tokens, char *input_string)
 {
     LOG_ASSERT(tokens->length > 0);
     // shunting yard algorithm
     TokenArr stack = { 0 };
     TokenArr output = { 0 };
+    int brackets_count = 0;
     tokenarr_init(&output, tokens->capacity);
     for (size_t i = 0; i < tokens->length; i++) {
         Token current_token = tokens->items[i];
@@ -36,9 +37,18 @@ void tokens_to_postfix(TokenArr *tokens)
             tokenarr_append(&stack, current_token);
             break;
         case LEFT_PAREN:
+            brackets_count++;
             tokenarr_append(&stack, current_token);
             break;
         case RIGHT_PAREN:
+            brackets_count--;
+            if (brackets_count < 0) {
+                return (Error){
+                    .type = EXTRA_BRACKET,
+                    .char_pos = current_token.pos,
+                    .input_string = input_string,
+                };
+            }
             while (stack.length > 0) {
                 Token popped_stack_token = tokenarr_pop(&stack);
                 if (popped_stack_token.type != LEFT_PAREN) {
@@ -58,22 +68,28 @@ void tokens_to_postfix(TokenArr *tokens)
     }
 
     *tokens = output;
+
+    return (Error){
+        .type = NO_ERROR,
+        .input_string = NULL,
+        .char_pos = 0,
+    };
 }
 
-double evaluate_postfix_tokens(TokenArr *tokens)
+Error evaluate_postfix_tokens(double *result, TokenArr *tokens)
 {
     LOG_ASSERT(tokens->length > 0);
-    double *stack;
-    stack = calloc(tokens->length, sizeof(double));
+    double *stack = calloc(tokens->length, sizeof(double));
     int stack_length = 0;
     char *endptr;
 
     for (size_t i = 0; i < tokens->length; i++) {
         Token token = tokens->items[i];
-        double result = 0.0;
+        double operation_result = 0.0;
         switch (token.type) {
         case NUMBER:
             stack[stack_length] = strtod(token.value, &endptr);
+            // TODO: handle error
             LOG_ASSERT(strlen(endptr) == 0);
             stack_length++;
             break;
@@ -91,19 +107,20 @@ double evaluate_postfix_tokens(TokenArr *tokens)
 
             switch (token.type) {
             case PLUS:
-                result = lhs + rhs;
+                operation_result = lhs + rhs;
                 break;
             case MINUS:
-                result = lhs - rhs;
+                operation_result = lhs - rhs;
                 break;
             case MULTIPLY:
-                result = lhs * rhs;
+                operation_result = lhs * rhs;
                 break;
             case DIVIDE:
-                result = lhs / rhs;
+                // TODO: handle division by zero
+                operation_result = lhs / rhs;
                 break;
             case POWER:
-                result = pow(lhs, rhs);
+                operation_result = pow(lhs, rhs);
                 break;
             case NUMBER:
             case LEFT_PAREN:
@@ -112,7 +129,7 @@ double evaluate_postfix_tokens(TokenArr *tokens)
                 UNREACHABLE;
             }
 
-            stack[stack_length] = result;
+            stack[stack_length] = operation_result;
             stack_length++;
             break;
         case LEFT_PAREN:
@@ -124,5 +141,10 @@ double evaluate_postfix_tokens(TokenArr *tokens)
 
     LOG_ASSERT(stack_length == 1);
 
-    return stack[0];
+    *result = stack[0];
+    return (Error){
+        .type = NO_ERROR,
+        .input_string = NULL,
+        .char_pos = 0,
+    };
 }
