@@ -1,4 +1,4 @@
 out/*
-# **/*.cov
-**/*.fuzz
-**/HONGGFUZZ.REPORT.TXT
+**/*.cov
+# **/*.fuzz
+# **/HONGGFUZZ.REPORT.TXT
