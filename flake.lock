@@ -16,9 +16,26 @@
         "type": "github"
       }
     },
+    "nixpkgs-honggfuzz": {
+      "locked": {
+        "lastModified": 1742150235,
+        "narHash": "sha256-lq6xKxzb2gbCtKnMKBj0hzR4VZU8Mo3caHgZWQ5ydBI=",
+        "owner": "fqidz",
+        "repo": "nixpkgs",
+        "rev": "61bf49c70189d4bcee2a1092325d568896966091",
+        "type": "github"
+      },
+      "original": {
+        "owner": "fqidz",
+        "ref": "honggfuzz",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-honggfuzz": "nixpkgs-honggfuzz"
       }
     }
   },

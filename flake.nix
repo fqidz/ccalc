@@ -1,12 +1,16 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs.nixpkgs-honggfuzz.url = "github:fqidz/nixpkgs/honggfuzz";
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, nixpkgs-honggfuzz }:
   let
     system = "x86_64-linux";
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
+    };
+    pkgs-honggfuzz = import nixpkgs-honggfuzz {
+      inherit system;
     };
   in
   {
@@ -22,7 +26,7 @@
         pkgs.glib
 
         pkgs.hyperfine
-        pkgs.honggfuzz
+        pkgs-honggfuzz.honggfuzz
 
         # manpaths dont appear in devshells
         # https://github.com/NixOS/nixpkgs/pull/234367
