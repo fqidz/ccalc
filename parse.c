@@ -1,5 +1,6 @@
 #include "logging.h"
 #include "tokenizer.h"
+#include <float.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -86,11 +87,21 @@ Error evaluate_postfix_tokens(double *result, TokenArr *tokens)
     for (size_t i = 0; i < tokens->length; i++) {
         Token token = tokens->items[i];
         double operation_result = 0.0;
+        double string_as_double = 0.0;
         switch (token.type) {
         case NUMBER:
-            stack[stack_length] = strtod(token.value, &endptr);
+            string_as_double = strtod(token.value, &endptr);
             // TODO: handle error
+            // printf("num: %.15f\n", string_as_double);
+            if (string_as_double > DBL_MAX) {
+                return (Error){
+                    .type = NUMBER_TOO_LARGE,
+                    .char_pos = token.pos,
+                    .input_string = "",
+                };
+            }
             LOG_ASSERT(strlen(endptr) == 0);
+            stack[stack_length] = string_as_double;
             stack_length++;
             break;
         case PLUS:

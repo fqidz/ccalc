@@ -215,7 +215,6 @@ void input_init(InputStream *input, char *string)
     LOG_ASSERT(strlen(string) > 0);
     char *trimmed_string = malloc(strlen(string) * sizeof(char));
     string_remove_spaces(trimmed_string, string);
-    free(string);
     input->string = trimmed_string;
     input->length = strlen(trimmed_string);
     input->pos = 0;

@@ -30,6 +30,8 @@ typedef enum {
     NO_ERROR,
     INVALID_CHAR,
     NUMBER_EXTRA_DOT,
+    NUMBER_TOO_LARGE,
+    NUMBER_TOO_SMALL,
     EXTRA_BRACKET,
 } ErrorType;
 

@@ -7,6 +7,7 @@ char *error_to_string(Error error)
 {
     size_t needed;
     char *buffer;
+    const char *const padding = "__________________________________";
 
     switch (error.type) {
     case INVALID_CHAR:
@@ -43,6 +44,25 @@ char *error_to_string(Error error)
                 (int)error.char_pos, error.input_string[error.char_pos]);
 
         return buffer;
+    case NUMBER_TOO_LARGE:
+        needed = (size_t)snprintf(NULL, 0,
+                                  RED BOLD
+                                  "[ERROR]: " RESET "%s\n%-*c%.*s|\n" RED BOLD
+                                  "char %i: Number too large '%c'" RESET,
+                                  error.input_string, (int)error.char_pos + 9,
+                                  '|', 10, padding, (int)error.char_pos,
+                                  error.input_string[error.char_pos]) +
+                 1;
+        buffer = malloc(needed);
+        sprintf(buffer,
+                RED BOLD "[ERROR]: " RESET "%s\n%-*c%.*s|\n" RED BOLD
+                         "char %i: Number too large '%c'" RESET,
+                error.input_string, (int)error.char_pos + 9, '|', 10, padding,
+                (int)error.char_pos, error.input_string[error.char_pos]);
+
+        return buffer;
+    case NUMBER_TOO_SMALL:
+        return "";
     case EXTRA_BRACKET:
         needed = (size_t)snprintf(NULL, 0,
                                   RED BOLD "[ERROR]: " RESET
