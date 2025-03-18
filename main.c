@@ -89,6 +89,7 @@ int main(void)
         decimals_len = double_get_decimal_length(mantissa, 8);
         printf("Result: %.*fe-%d\n", decimals_len, mantissa, abs(exponent));
     } else {
+        decimals_len = double_get_decimal_length(result, 12);
         printf("Result: %.*f\n", decimals_len, result);
     }
 
