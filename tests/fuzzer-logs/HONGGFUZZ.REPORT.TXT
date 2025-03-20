@@ -112,3 +112,71 @@ STACK:
  <0x00007ffff7c2a2b9> [func:UNKNOWN file: line:0 module:/nix/store/6q2mknq81cyscjmkv72fpcsvan56qhmg-glibc-2.40-66/lib/libc.so.6]
  <0x000055555555ab05> [func:UNKNOWN file: line:0 module:/home/faidz/Projects/c-calc/out/main]
 =====================================================================
+=====================================================================
+TIME: 2025-03-19.01:21:57
+=====================================================================
+FUZZER ARGS:
+ mutationsPerRun : 5
+ externalCmd     : NULL
+ fuzzStdin       : TRUE
+ timeout         : 1 (sec)
+ ignoreAddr      : (nil)
+ ASLimit         : 0 (MiB)
+ RSSLimit        : 0 (MiB)
+ DATALimit       : 0 (MiB)
+ wordlistFile    : NULL
+ dynFileMethod   : 
+ fuzzTarget      : ../../out/main 
+CRASH:
+DESCRIPTION: 
+ORIG_FNAME: 3a1ecb2d916a3987bbd03e92bc39d2e2.00000020.honggfuzz.cov
+FUZZ_FNAME: /home/faidz/Projects/c-calc/tests/fuzzer-logs/SIGABRT.PC.7ffff7c9916c.STACK.1a94e5baa4.CODE.-6.ADDR.0.INSTR.mov____%eax,%ebx.fuzz
+PID: 155266
+SIGNAL: SIGABRT (6)
+PC: 0x7ffff7c9916c
+FAULT ADDRESS: 0x0
+INSTRUCTION: mov____%eax,%ebx
+STACK HASH: 0000001a94e5baa4
+STACK:
+ <0x00007ffff7c40e86> [func:UNKNOWN file: line:0 module:/nix/store/cmpyglinc9xl9pr4ymx8akl286ygl64x-glibc-2.40-66/lib/libc.so.6]
+ <0x00007ffff7c2893a> [func:UNKNOWN file: line:0 module:/nix/store/cmpyglinc9xl9pr4ymx8akl286ygl64x-glibc-2.40-66/lib/libc.so.6]
+ <0x0000555555592e2a> [func:UNKNOWN file: line:0 module:/home/faidz/Projects/c-calc/out/main]
+ <0x0000555555590017> [func:UNKNOWN file: line:0 module:/home/faidz/Projects/c-calc/out/main]
+ <0x00007ffff7c2a1fe> [func:UNKNOWN file: line:0 module:/nix/store/cmpyglinc9xl9pr4ymx8akl286ygl64x-glibc-2.40-66/lib/libc.so.6]
+ <0x00007ffff7c2a2b9> [func:UNKNOWN file: line:0 module:/nix/store/cmpyglinc9xl9pr4ymx8akl286ygl64x-glibc-2.40-66/lib/libc.so.6]
+ <0x000055555555ab45> [func:UNKNOWN file: line:0 module:/home/faidz/Projects/c-calc/out/main]
+=====================================================================
+=====================================================================
+TIME: 2025-03-19.01:21:58
+=====================================================================
+FUZZER ARGS:
+ mutationsPerRun : 5
+ externalCmd     : NULL
+ fuzzStdin       : TRUE
+ timeout         : 1 (sec)
+ ignoreAddr      : (nil)
+ ASLimit         : 0 (MiB)
+ RSSLimit        : 0 (MiB)
+ DATALimit       : 0 (MiB)
+ wordlistFile    : NULL
+ dynFileMethod   : 
+ fuzzTarget      : ../../out/main 
+CRASH:
+DESCRIPTION: 
+ORIG_FNAME: 690036a88c4a8a9ca9e9b7c4fd63553a.00000020.honggfuzz.cov
+FUZZ_FNAME: /home/faidz/Projects/c-calc/tests/fuzzer-logs/SIGABRT.PC.7ffff7c9916c.STACK.188d13213f.CODE.-6.ADDR.0.INSTR.mov____%eax,%ebx.fuzz
+PID: 155726
+SIGNAL: SIGABRT (6)
+PC: 0x7ffff7c9916c
+FAULT ADDRESS: 0x0
+INSTRUCTION: mov____%eax,%ebx
+STACK HASH: 000000188d13213f
+STACK:
+ <0x00007ffff7c40e86> [func:UNKNOWN file: line:0 module:/nix/store/cmpyglinc9xl9pr4ymx8akl286ygl64x-glibc-2.40-66/lib/libc.so.6]
+ <0x00007ffff7c2893a> [func:UNKNOWN file: line:0 module:/nix/store/cmpyglinc9xl9pr4ymx8akl286ygl64x-glibc-2.40-66/lib/libc.so.6]
+ <0x00005555555929f1> [func:UNKNOWN file: line:0 module:/home/faidz/Projects/c-calc/out/main]
+ <0x000055555558ffc0> [func:UNKNOWN file: line:0 module:/home/faidz/Projects/c-calc/out/main]
+ <0x00007ffff7c2a1fe> [func:UNKNOWN file: line:0 module:/nix/store/cmpyglinc9xl9pr4ymx8akl286ygl64x-glibc-2.40-66/lib/libc.so.6]
+ <0x00007ffff7c2a2b9> [func:UNKNOWN file: line:0 module:/nix/store/cmpyglinc9xl9pr4ymx8akl286ygl64x-glibc-2.40-66/lib/libc.so.6]
+ <0x000055555555ab45> [func:UNKNOWN file: line:0 module:/home/faidz/Projects/c-calc/out/main]
+=====================================================================
