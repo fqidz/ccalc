@@ -1,6 +1,5 @@
 #include "logging.h"
 #include <assert.h>
-#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include "tokenizer.h"
@@ -38,7 +37,8 @@ int main(void)
     }
 
     double result = 0.0;
-    Error evaluate_error = evaluate_postfix_tokens(&result, &tokens);
+    Error evaluate_error =
+            evaluate_postfix_tokens(&result, &tokens, input_stream.string);
     if (evaluate_error.type != NO_ERROR) {
         fprintf(stderr, "%s\n", error_to_string(evaluate_error));
         return 1;

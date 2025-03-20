@@ -7,77 +7,74 @@ char *error_to_string(Error error)
 {
     size_t needed;
     char *buffer;
-    const char *const padding = "__________________________________";
 
     switch (error.type) {
     case INVALID_CHAR:
         needed = (size_t)snprintf(NULL, 0,
                                   RED BOLD
                                   "[ERROR]: " RESET "%s\n%*c^\n" RED BOLD
-                                  "char %i: Invalid character '%c'" RESET,
+                                  "char %zu: Invalid character '%c'" RESET,
                                   error.input_string, (int)error.char_pos + 9,
-                                  ' ', (int)error.char_pos,
+                                  ' ', error.char_pos,
                                   error.input_string[error.char_pos]) +
                  1;
         buffer = malloc(needed);
         sprintf(buffer,
                 RED BOLD "[ERROR]: " RESET "%s\n%*c^\n" RED BOLD
-                         "char %i: Invalid character '%c'" RESET,
+                         "char %zu: Invalid character '%c'" RESET,
                 error.input_string, (int)error.char_pos + 9, ' ',
-                (int)error.char_pos, error.input_string[error.char_pos]);
+                error.char_pos, error.input_string[error.char_pos]);
 
         return buffer;
     case NUMBER_EXTRA_DOT:
         needed = (size_t)snprintf(NULL, 0,
                                   RED BOLD
                                   "[ERROR]: " RESET "%s\n%*c^\n" RED BOLD
-                                  "char %i: Number has extra dot '%c'" RESET,
+                                  "char %zu: Number has extra dot '%c'" RESET,
                                   error.input_string, (int)error.char_pos + 9,
-                                  ' ', (int)error.char_pos,
+                                  ' ', error.char_pos,
                                   error.input_string[error.char_pos]) +
                  1;
         buffer = malloc(needed);
         sprintf(buffer,
                 RED BOLD "[ERROR]: " RESET "%s\n%*c^\n" RED BOLD
-                         "char %i: Number has extra dot '%c'" RESET,
+                         "char %zu: Number has extra dot '%c'" RESET,
                 error.input_string, (int)error.char_pos + 9, ' ',
-                (int)error.char_pos, error.input_string[error.char_pos]);
+                error.char_pos, error.input_string[error.char_pos]);
 
         return buffer;
-    case NUMBER_TOO_LARGE:
+    case EXTRA_OPERATOR:
         needed = (size_t)snprintf(NULL, 0,
                                   RED BOLD
-                                  "[ERROR]: " RESET "%s\n%-*c%.*s|\n" RED BOLD
-                                  "char %i: Number too large '%c'" RESET,
+                                  "[ERROR]: " RESET "%s\n%*c^\n" RED BOLD
+                                  "char %zu: Extra operator '%c'" RESET,
                                   error.input_string, (int)error.char_pos + 9,
-                                  '|', 10, padding, (int)error.char_pos,
+                                  ' ', error.char_pos,
                                   error.input_string[error.char_pos]) +
                  1;
         buffer = malloc(needed);
         sprintf(buffer,
-                RED BOLD "[ERROR]: " RESET "%s\n%-*c%.*s|\n" RED BOLD
-                         "char %i: Number too large '%c'" RESET,
-                error.input_string, (int)error.char_pos + 9, '|', 10, padding,
-                (int)error.char_pos, error.input_string[error.char_pos]);
+                RED BOLD "[ERROR]: " RESET "%s\n%*c^\n" RED BOLD
+                         "char %zu: Extra operator '%c'" RESET,
+                error.input_string, (int)error.char_pos + 9, ' ',
+                error.char_pos, error.input_string[error.char_pos]);
 
         return buffer;
-    case NUMBER_TOO_SMALL:
-        return "";
     case EXTRA_BRACKET:
         needed = (size_t)snprintf(NULL, 0,
                                   RED BOLD "[ERROR]: " RESET
                                            "%s\n%*c^\n" RED BOLD
-                                           "char %i: Extra bracket '%c'" RESET,
+                                           "char %zu: Extra bracket '%c'" RESET,
                                   error.input_string, (int)error.char_pos + 9,
-                                  ' ', (int)error.char_pos,
+                                  ' ', error.char_pos,
                                   error.input_string[error.char_pos]) +
                  1;
         buffer = malloc(needed);
         sprintf(buffer,
                 RED BOLD "[ERROR]: " RESET "%s\n%*c^\n" RED BOLD
-                         "char %i: Extra bracket '%c'" RESET,
+                         "char %zu: Extra bracket '%c'" RESET,
                 error.input_string, (int)error.char_pos + 9, ' ',
-                (int)error.char_pos, error.input_string[error.char_pos]);
+                error.char_pos, error.input_string[error.char_pos]);
 
         return buffer;
     case NO_ERROR:

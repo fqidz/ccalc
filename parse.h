@@ -3,7 +3,8 @@
 #include "tokenizer.h"
 
 Error tokens_to_postfix(TokenArr *tokens, char *input_string);
-Error evaluate_postfix_tokens(double *result, TokenArr *tokens);
+Error evaluate_postfix_tokens(double *result, TokenArr *tokens,
+                              char *input_string);
 
 int double_get_decimal_length(double input, int max_len);
 double double_get_scientific_notation(double input, int *exponent);

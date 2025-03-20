@@ -11,6 +11,7 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
     // shunting yard algorithm
     TokenArr stack = { 0 };
     TokenArr output = { 0 };
+    size_t last_left_paren_pos = 0;
     int brackets_count = 0;
     tokenarr_init(&output, tokens->capacity);
     for (size_t i = 0; i < tokens->length; i++) {
@@ -40,6 +41,7 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
             break;
         case LEFT_PAREN:
             brackets_count++;
+            last_left_paren_pos = current_token.pos;
             tokenarr_append(&stack, current_token);
             break;
         case RIGHT_PAREN:
@@ -65,6 +67,14 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
         }
     }
 
+    if (brackets_count != 0) {
+        return (Error){
+            .type = EXTRA_BRACKET,
+            .char_pos = last_left_paren_pos,
+            .input_string = input_string,
+        };
+    }
+
     while (stack.length > 0) {
         tokenarr_append(&output, tokenarr_pop(&stack));
     }
@@ -78,7 +88,8 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
     };
 }
 
-Error evaluate_postfix_tokens(double *result, TokenArr *tokens)
+Error evaluate_postfix_tokens(double *result, TokenArr *tokens,
+                              char *input_string)
 {
     LOG_ASSERT(tokens->length > 0);
     double *stack = calloc(tokens->length, sizeof(double));
@@ -102,7 +113,11 @@ Error evaluate_postfix_tokens(double *result, TokenArr *tokens)
         case DIVIDE:
         case POWER:
             if (stack_length < 2) {
-                UNREACHABLE;
+                return (Error){
+                    .type = EXTRA_OPERATOR,
+                    .char_pos = token.pos,
+                    .input_string = input_string,
+                };
             }
             double lhs = stack[stack_length - 2];
             double rhs = stack[stack_length - 1];

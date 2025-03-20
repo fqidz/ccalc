@@ -16,7 +16,7 @@
     do {                                                           \
         if (!(expr)) {                                             \
             LOG_MESSAGE("ERROR", "Assertion `%s` failed.", #expr); \
-            exit(1);                                               \
+            abort();                                               \
         }                                                          \
     } while (0)
 
@@ -24,14 +24,13 @@
 
 #define UNREACHABLE                                  \
     LOG_MESSAGE("ERROR", "Path unreachable!%s", ""); \
-    exit(1)
+    abort()
 
 typedef enum {
     NO_ERROR,
     INVALID_CHAR,
+    EXTRA_OPERATOR,
     NUMBER_EXTRA_DOT,
-    NUMBER_TOO_LARGE,
-    NUMBER_TOO_SMALL,
     EXTRA_BRACKET,
 } ErrorType;
 
