@@ -7,6 +7,13 @@
 
 #define STRING_SIZE 2000
 
+// TODO: add trigonometric functions
+// TODO: add constants; eg. pi, e
+// TODO: add sqrt, cube root, generic root
+// TODO: multiply using brackets; eg. (2)(1+3)
+// TODO: add option to show step by step
+// TODO: take input from args
+
 int main(void)
 {
     char *input_string = calloc(STRING_SIZE, sizeof(char));
