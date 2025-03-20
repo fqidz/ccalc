@@ -206,7 +206,7 @@ char *double_format_to_string(double input)
         char *string = malloc(4 * sizeof(char));
         strcpy(string, "INF");
         return string;
-    } else if (input - DBL_MIN < 1e-7) {
+    } else if (fabs(input - DBL_MIN) < 1e-7) {
         char *string = malloc(4 * sizeof(char));
         strcpy(string, "0.00000000");
         return string;
@@ -217,7 +217,7 @@ char *double_format_to_string(double input)
     int exponent;
     double mantissa = double_get_scientific_notation(input, &exponent);
     if (exponent >= 12) {
-        decimals_len = double_get_decimal_length(mantissa, 7);
+        decimals_len = double_get_decimal_length(mantissa, 12);
 
         needed_bytes = (size_t)snprintf(NULL, 0, "%.*fe+%d", decimals_len,
                                         mantissa, abs(exponent)) +
@@ -232,7 +232,7 @@ char *double_format_to_string(double input)
         buffer = malloc(needed_bytes);
         sprintf(buffer, "%.*fe-%d", decimals_len, mantissa, abs(exponent));
     } else {
-        decimals_len = double_get_decimal_length(input, 9);
+        decimals_len = double_get_decimal_length(input, 12);
         needed_bytes =
                 (size_t)snprintf(NULL, 0, "%.*f", decimals_len, input + 1) + 1;
         buffer = malloc(needed_bytes);
