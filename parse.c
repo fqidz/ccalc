@@ -30,8 +30,8 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
                 Token last_stack_token = stack.items[stack.length - 1];
                 if (last_stack_token.type == LEFT_PAREN)
                     break;
-                int comparison = token_type_compare(current_token.type,
-                                                    last_stack_token.type);
+                int comparison = token_type_compare_precidence(
+                        current_token.type, last_stack_token.type);
                 if (comparison == 1 ||
                     token_is_right_associative(current_token.type))
                     break;
@@ -232,7 +232,7 @@ char *double_format_to_string(double input)
         buffer = malloc(needed_bytes);
         sprintf(buffer, "%.*fe-%d", decimals_len, mantissa, abs(exponent));
     } else {
-        decimals_len = double_get_decimal_length(input, 12);
+        decimals_len = double_get_decimal_length(input, 9);
         needed_bytes =
                 (size_t)snprintf(NULL, 0, "%.*f", decimals_len, input + 1) + 1;
         buffer = malloc(needed_bytes);

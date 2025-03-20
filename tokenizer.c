@@ -3,89 +3,35 @@
 #include "logging.h"
 #include <string.h>
 
-int token_type_compare(TokenType lhs, TokenType rhs)
+int token_type_get_precidence(TokenType token_type)
 {
-    switch (lhs) {
+    switch (token_type) {
     case NUMBER:
-        switch (rhs) {
-        case NUMBER:
-            return 0;
-        case PLUS:
-        case MINUS:
-        case MULTIPLY:
-        case DIVIDE:
-        case POWER:
-            return -1;
-        case LEFT_PAREN:
-        case RIGHT_PAREN:
-        default:
-            UNREACHABLE;
-        }
+        return 1;
     case PLUS:
     case MINUS:
-        switch (rhs) {
-        case NUMBER:
-            return 1;
-        case PLUS:
-        case MINUS:
-            return 0;
-        case MULTIPLY:
-        case DIVIDE:
-        case POWER:
-            return -1;
-        case LEFT_PAREN:
-        case RIGHT_PAREN:
-        default:
-            UNREACHABLE;
-        }
+        return 2;
     case MULTIPLY:
     case DIVIDE:
-        switch (rhs) {
-        case NUMBER:
-        case PLUS:
-        case MINUS:
-            return 1;
-        case MULTIPLY:
-        case DIVIDE:
-            return 0;
-        case POWER:
-            return -1;
-        case LEFT_PAREN:
-        case RIGHT_PAREN:
-        default:
-            UNREACHABLE;
-        }
+        return 3;
     case POWER:
-        switch (rhs) {
-        case NUMBER:
-        case PLUS:
-        case MINUS:
-        case MULTIPLY:
-        case DIVIDE:
-            return 1;
-        case POWER:
-            return 0;
-        case LEFT_PAREN:
-        case RIGHT_PAREN:
-        default:
-            UNREACHABLE;
-        }
+        return 4;
     case LEFT_PAREN:
     case RIGHT_PAREN:
-        switch (rhs) {
-        case NUMBER:
-        case PLUS:
-        case MINUS:
-        case MULTIPLY:
-        case DIVIDE:
-        case POWER:
-        case LEFT_PAREN:
-        case RIGHT_PAREN:
-        default:
-            UNREACHABLE;
-        }
     default:
         UNREACHABLE;
+    }
+}
+
+int token_type_compare_precidence(TokenType lhs, TokenType rhs)
+{
+    if (token_type_get_precidence(lhs) < token_type_get_precidence(rhs)) {
+        return -1;
+    } else if (token_type_get_precidence(lhs) ==
+               token_type_get_precidence(rhs)) {
+        return 0;
+    } else { // lhs > rhs
+        return 1;
     }
 }
 

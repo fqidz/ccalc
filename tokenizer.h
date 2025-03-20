@@ -29,7 +29,7 @@ typedef enum {
  *
  * '1' lhs > rhs
  * */
-int token_type_compare(TokenType lhs, TokenType rhs);
+int token_type_compare_precidence(TokenType lhs, TokenType rhs);
 bool token_is_right_associative(TokenType token_type);
 
 // ---------------------------------------------------------
