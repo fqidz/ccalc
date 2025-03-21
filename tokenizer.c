@@ -197,7 +197,7 @@ bool is_dot_or_digit(char c)
     return (bool)(isdigit(c) || c == '.');
 }
 
-bool is_symbol(char c)
+bool is_operator(char c)
 {
     switch (c) {
     case '+':
@@ -231,7 +231,7 @@ bool is_bracket(char c)
 Error input_read_symbol(TokenArr *tokens, InputStream *input)
 {
     LOG_ASSERT(!input_is_eof(input));
-    LOG_ASSERT(is_symbol(input_peek(input)));
+    LOG_ASSERT(is_operator(input_peek(input)));
     char next_char = input_next(input);
 
     Token token = { 0 };
@@ -348,6 +348,17 @@ Error input_read_bracket(TokenArr *tokens, InputStream *input)
     };
 }
 
+// neg:
+// -2
+// -(2+3)
+// 2--2
+// -sin(2)
+// 2^-1
+//
+// minus:
+// 2-(3+2)
+// cos(3)-sin(1)
+
 Error input_tokenize(TokenArr *tokens, InputStream *input)
 {
     while (!input_is_eof(input)) {
@@ -355,7 +366,7 @@ Error input_tokenize(TokenArr *tokens, InputStream *input)
         Error token_error = { 0 };
         if (is_dot_or_digit(peeked_char)) {
             token_error = input_read_number(tokens, input);
-        } else if (is_symbol(peeked_char)) {
+        } else if (is_operator(peeked_char)) {
             char current_char = input_peek_nth(input, 0);
             char char_after_peeked = input_peek_nth(input, 2);
             // treat next char as number if current token is

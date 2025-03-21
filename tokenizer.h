@@ -90,7 +90,7 @@ void string_remove_spaces(char *restrict str_trimmed,
  * */
 void string_append_char(char **string, char c);
 
-bool is_symbol(char c);
+bool is_operator(char c);
 bool is_bracket(char c);
 
 Error input_tokenize(TokenArr *tokens, InputStream *input);

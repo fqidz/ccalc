@@ -7,6 +7,7 @@
 
 #define STRING_SIZE 2000
 
+// TODO: deal with negative cos, sin, e, phi, etc.
 // TODO: add trigonometric functions
 // TODO: add constants; eg. pi, e
 // TODO: add sqrt, cube root, generic root

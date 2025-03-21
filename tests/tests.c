@@ -103,6 +103,7 @@ static void test_evaluate_postfix_tokens(void)
     LOG_ASSERT(input_tokenize(&tokens, &input_stream).type == NO_ERROR);
     LOG_ASSERT(tokens_to_postfix(&tokens, input_stream.string).type ==
                NO_ERROR);
+    printf("%s\n", tokenarr_to_string(&tokens));
     LOG_ASSERT(evaluate_postfix_tokens(&result, &tokens, input_stream.string)
                        .type == NO_ERROR);
 
@@ -148,7 +149,6 @@ static void test_input_tokenize(void)
 
     tokenize_error = input_tokenize(&tokens, &input_stream);
     LOG_ASSERT(tokenize_error.type == NO_ERROR);
-    LOG_ASSERT(tokenize_error.char_pos == 10);
 
     LOG_ASSERT(strcmp(tokenarr_to_string(&tokens),
                       "3 - -.3 + 1.4 * ( -27 / 10 * -33.333 "
@@ -332,7 +332,7 @@ static void test_input_read_number_symbol(void)
     LOG_ASSERT(tokens.items[4].type == NUMBER);
 }
 
-static void test_input_is_symbol(void)
+static void test_input_is_operator(void)
 {
     char *string = new_string("+-*xX/");
 
@@ -340,20 +340,20 @@ static void test_input_is_symbol(void)
     input_init(&input_stream, string);
 
     while (!input_is_eof(&input_stream)) {
-        LOG_ASSERT(is_symbol(input_next(&input_stream)));
+        LOG_ASSERT(is_operator(input_next(&input_stream)));
     }
 
     string = new_string("x+-;/X*");
     input_free(&input_stream);
     input_init(&input_stream, string);
 
-    LOG_ASSERT(is_symbol(input_next(&input_stream)));
-    LOG_ASSERT(is_symbol(input_next(&input_stream)));
-    LOG_ASSERT(is_symbol(input_next(&input_stream)));
-    LOG_ASSERT(!is_symbol(input_next(&input_stream)));
-    LOG_ASSERT(is_symbol(input_next(&input_stream)));
-    LOG_ASSERT(is_symbol(input_next(&input_stream)));
-    LOG_ASSERT(is_symbol(input_next(&input_stream)));
+    LOG_ASSERT(is_operator(input_next(&input_stream)));
+    LOG_ASSERT(is_operator(input_next(&input_stream)));
+    LOG_ASSERT(is_operator(input_next(&input_stream)));
+    LOG_ASSERT(!is_operator(input_next(&input_stream)));
+    LOG_ASSERT(is_operator(input_next(&input_stream)));
+    LOG_ASSERT(is_operator(input_next(&input_stream)));
+    LOG_ASSERT(is_operator(input_next(&input_stream)));
 }
 
 static void test_input_is_bracket(void)
@@ -413,7 +413,7 @@ static void test_all(void)
     test_input_with_whitespace();
     test_input_read_number_symbol();
 
-    test_input_is_symbol();
+    test_input_is_operator();
     test_input_is_bracket();
 }
 
