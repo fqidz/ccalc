@@ -183,6 +183,20 @@ char input_peek(InputStream *input)
     return input->string[input->pos];
 }
 
+char input_peek_nth(InputStream *input, int n_chars)
+{
+    int peeked_pos = (int)input->pos + n_chars - 1;
+    if (peeked_pos < 0 || peeked_pos >= (int)input->length) {
+        return '\0';
+    }
+    return input->string[peeked_pos];
+}
+
+bool is_dot_or_digit(char c)
+{
+    return (bool)(isdigit(c) || c == '.');
+}
+
 bool is_symbol(char c)
 {
     switch (c) {
@@ -259,12 +273,17 @@ Error input_read_symbol(TokenArr *tokens, InputStream *input)
 Error input_read_number(TokenArr *tokens, InputStream *input)
 {
     LOG_ASSERT(!input_is_eof(input));
-    LOG_ASSERT(isdigit(input_peek(input)) || input_peek(input) == '.');
+    char peeked_char = input_peek(input);
+    LOG_ASSERT(is_dot_or_digit(peeked_char) || peeked_char == '-');
 
     Token token = { 0 };
     token.value = calloc(2, sizeof(char));
     token.pos = input->pos;
     token.type = NUMBER;
+
+    if (peeked_char == '-') {
+        string_append_char(&token.value, input_next(input));
+    }
 
     bool has_dot = false;
     while (!input_is_eof(input)) {
@@ -334,10 +353,21 @@ Error input_tokenize(TokenArr *tokens, InputStream *input)
     while (!input_is_eof(input)) {
         char peeked_char = input_peek(input);
         Error token_error = { 0 };
-        if (isdigit(peeked_char) || peeked_char == '.') {
+        if (is_dot_or_digit(peeked_char)) {
             token_error = input_read_number(tokens, input);
         } else if (is_symbol(peeked_char)) {
-            token_error = input_read_symbol(tokens, input);
+            char current_char = input_peek_nth(input, 0);
+            char char_after_peeked = input_peek_nth(input, 2);
+            printf("current: '%c'\tpeeked: '%c'\tpeeked2: '%c'\n", current_char,
+                   peeked_char, char_after_peeked);
+            // treat next char as number if current token is
+            // a symbol, and next char is a '-' followed by a number
+            if (!is_dot_or_digit(current_char) && peeked_char == '-' &&
+                is_dot_or_digit(char_after_peeked)) {
+                token_error = input_read_number(tokens, input);
+            } else {
+                token_error = input_read_symbol(tokens, input);
+            }
         } else if (is_bracket(peeked_char)) {
             token_error = input_read_bracket(tokens, input);
         } else {

@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <math.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -19,6 +18,9 @@ static char *new_string(const char *const string_literal)
 static void test_double_format_to_string(void)
 {
     double input;
+
+    input = 0;
+    LOG_ASSERT(strcmp(double_format_to_string(input), "0") == 0);
 
     input = 2.0000002;
     LOG_ASSERT(strcmp(double_format_to_string(input), "2.0000002") == 0);
@@ -314,6 +316,35 @@ static void test_input_peek(void)
     LOG_ASSERT(input_next(&input_stream) == 'r');
 }
 
+static void test_input_peek_nth(void)
+{
+    char *string = new_string("foobar");
+
+    InputStream input_stream = { 0 };
+    input_init(&input_stream, string);
+
+    LOG_ASSERT(input_peek(&input_stream) == input_peek_nth(&input_stream, 1));
+    LOG_ASSERT(input_peek_nth(&input_stream, 1) == 'f');
+    LOG_ASSERT(input_peek_nth(&input_stream, 0) == '\0');
+    LOG_ASSERT(input_peek_nth(&input_stream, -1) == '\0');
+    LOG_ASSERT(input_peek_nth(&input_stream, -200) == '\0');
+    LOG_ASSERT(input_peek_nth(&input_stream, 200) == '\0');
+
+    LOG_ASSERT(input_next(&input_stream) == 'f');
+    LOG_ASSERT(input_peek(&input_stream) == input_peek_nth(&input_stream, 1));
+    LOG_ASSERT(input_peek_nth(&input_stream, -1) == '\0');
+    LOG_ASSERT(input_peek_nth(&input_stream, 2) == 'o');
+    LOG_ASSERT(input_peek_nth(&input_stream, 3) == 'b');
+    LOG_ASSERT(input_peek_nth(&input_stream, 0) == 'f');
+    LOG_ASSERT(input_peek_nth(&input_stream, 4) == 'a');
+    LOG_ASSERT(input_peek_nth(&input_stream, 5) == 'r');
+    LOG_ASSERT(input_peek_nth(&input_stream, 6) == '\0');
+
+    LOG_ASSERT(input_next(&input_stream) == 'o');
+    LOG_ASSERT(input_peek(&input_stream) == input_peek_nth(&input_stream, 1));
+    LOG_ASSERT(input_peek_nth(&input_stream, 4) == 'r');
+}
+
 static void test_input_is_eof(void)
 {
     char *string = new_string("12345");
@@ -453,6 +484,7 @@ static void test_all(void)
 
     test_input_next();
     test_input_peek();
+    test_input_peek_nth();
     test_input_is_eof();
     test_input_with_whitespace();
     test_input_read_number_symbol();

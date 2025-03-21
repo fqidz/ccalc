@@ -68,6 +68,14 @@ void input_free(InputStream *input);
 void input_init(InputStream *input, char *string);
 char input_next(InputStream *input);
 char input_peek(InputStream *input);
+/*
+ * n_chars == -1 is previous char;
+ * n_chars == 0 is current char;
+ * n_chars == 1 is next char;
+ * n_chars > 1 is n_chars after current char;
+ * n_chars < -1 is n_chars before current char;
+ * */
+char input_peek_nth(InputStream *input, int n_chars);
 bool input_is_eof(InputStream *input);
 
 Error input_read_symbol(TokenArr *tokens, InputStream *input);
