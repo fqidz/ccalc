@@ -16,6 +16,32 @@ static char *new_string(const char *const string_literal)
     return string;
 }
 
+static void test_double_format_to_string(void)
+{
+    double input;
+
+    input = 2.0000002;
+    LOG_ASSERT(strcmp(double_format_to_string(input), "2.0000002") == 0);
+    input = 108923019318731982371283719.0;
+    LOG_ASSERT(strcmp(double_format_to_string(input), "1.089230193187e+26") ==
+               0);
+    input = 0.000000000000000000000007321;
+    LOG_ASSERT(strcmp(double_format_to_string(input), "7.321e-24") == 0);
+
+    input = -17;
+    LOG_ASSERT(strcmp(double_format_to_string(input), "-17") == 0);
+    input = -298329832913801283103.0;
+    LOG_ASSERT(strcmp(double_format_to_string(input), "-2.983298329138e+20") ==
+               0);
+    input = -0.000000000000038238;
+    LOG_ASSERT(strcmp(double_format_to_string(input), "-3.8238e-14") == 0);
+
+    input = atof("1e2000");
+    LOG_ASSERT(strcmp(double_format_to_string(input), "INF") == 0);
+    input = atof("1e-2000");
+    LOG_ASSERT(strcmp(double_format_to_string(input), "0.00000000") == 0);
+}
+
 static void test_tokens_to_postfix(void)
 {
     char *string = new_string("2+3*9.0/(2-3*5^2)+.3^2");
@@ -61,6 +87,28 @@ static void test_tokens_to_postfix(void)
     LOG_ASSERT(postfix_error.type == EXTRA_BRACKET);
     LOG_ASSERT(postfix_error.char_pos == 15);
     LOG_ASSERT(postfix_error.input_string);
+}
+
+static void test_evaluate_postfix_tokens(void)
+{
+    char *string = new_string("12+2*(3030/8/8/3*(3-2)-2)-2/4^10");
+
+    TokenArr tokens = { 0 };
+    InputStream input_stream = { 0 };
+    input_init(&input_stream, string);
+
+    double result = 0;
+    LOG_ASSERT(input_tokenize(&tokens, &input_stream).type == NO_ERROR);
+    LOG_ASSERT(tokens_to_postfix(&tokens, input_stream.string).type ==
+               NO_ERROR);
+    LOG_ASSERT(evaluate_postfix_tokens(&result, &tokens, input_stream.string)
+                       .type == NO_ERROR);
+
+    size_t needed = (size_t)snprintf(NULL, 0, "%.20f", result) + 1;
+    char *result_as_string = malloc(needed);
+    sprintf(result_as_string, "%.20f", result);
+
+    LOG_ASSERT(strcmp(result_as_string, "39.56249809265136718750") == 0);
 }
 
 static void test_input_tokenize(void)
@@ -391,30 +439,14 @@ static void test_input_is_bracket(void)
     }
 }
 
-static void test_calculator(void)
-{
-    char *string = new_string("3 + 4 x 2 / ( 1 - 5 ) ^ 2 ^ 3");
-
-    TokenArr tokens = { 0 };
-    InputStream input_stream = { 0 };
-    input_init(&input_stream, string);
-
-    input_tokenize(&tokens, &input_stream);
-    tokens_to_postfix(&tokens, input_stream.string);
-
-    char *postfix_string = tokenarr_to_string(&tokens);
-
-    double result = 0;
-    evaluate_postfix_tokens(&result, &tokens, input_stream.string);
-    LOG_ASSERT(strcmp(postfix_string, "3 4 2 * 1 5 - 2 3 ^ ^ / +") == 0);
-    LOG_ASSERT(fabs(result - 3.000122) < 1e-7);
-}
-
 static void test_all(void)
 {
     // test_token_type_compare();
+    test_double_format_to_string();
+
     test_tokens_to_postfix();
     test_input_tokenize();
+    test_evaluate_postfix_tokens();
 
     test_string_remove_all_whitespace();
     test_string_append_char();
@@ -427,8 +459,6 @@ static void test_all(void)
 
     test_input_is_symbol();
     test_input_is_bracket();
-
-    test_calculator();
 }
 
 int main(void)

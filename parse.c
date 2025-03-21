@@ -206,7 +206,7 @@ char *double_format_to_string(double input)
         char *string = malloc(4 * sizeof(char));
         strcpy(string, "INF");
         return string;
-    } else if (fabs(input - DBL_MIN) < 1e-7) {
+    } else if (fabs(input) <= DBL_MIN) {
         char *string = malloc(4 * sizeof(char));
         strcpy(string, "0.00000000");
         return string;
