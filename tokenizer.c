@@ -358,8 +358,6 @@ Error input_tokenize(TokenArr *tokens, InputStream *input)
         } else if (is_symbol(peeked_char)) {
             char current_char = input_peek_nth(input, 0);
             char char_after_peeked = input_peek_nth(input, 2);
-            printf("current: '%c'\tpeeked: '%c'\tpeeked2: '%c'\n", current_char,
-                   peeked_char, char_after_peeked);
             // treat next char as number if current token is
             // a symbol, and next char is a '-' followed by a number
             if (!is_dot_or_digit(current_char) && peeked_char == '-' &&

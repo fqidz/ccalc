@@ -202,24 +202,22 @@ double double_get_scientific_notation(double input, int *exponent)
 
 char *double_format_to_string(double input)
 {
-    if (input == 0.0) {
-        char *string = malloc(2 * sizeof(char));
-        strcpy(string, "0");
-        return string;
-    } else if (input == HUGE_VAL) {
+    if (input == HUGE_VAL) {
         char *string = malloc(4 * sizeof(char));
         strcpy(string, "INF");
         return string;
     } else if (fabs(input) <= DBL_MIN) {
-        char *string = malloc(11 * sizeof(char));
-        strcpy(string, "0.00000000");
+        char *string = malloc(2 * sizeof(char));
+        strcpy(string, "0");
         return string;
     }
+
     size_t needed_bytes;
     char *buffer;
     int decimals_len;
     int exponent;
     double mantissa = double_get_scientific_notation(input, &exponent);
+
     if (exponent >= 12) {
         decimals_len = double_get_decimal_length(mantissa, 12);
 

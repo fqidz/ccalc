@@ -41,7 +41,7 @@ static void test_double_format_to_string(void)
     input = atof("1e2000");
     LOG_ASSERT(strcmp(double_format_to_string(input), "INF") == 0);
     input = atof("1e-2000");
-    LOG_ASSERT(strcmp(double_format_to_string(input), "0.00000000") == 0);
+    LOG_ASSERT(strcmp(double_format_to_string(input), "0") == 0);
 }
 
 static void test_tokens_to_postfix(void)
@@ -123,73 +123,9 @@ static void test_input_tokenize(void)
 
     Error tokenize_error = input_tokenize(&tokens, &input_stream);
     LOG_ASSERT(tokenize_error.type == NO_ERROR);
-    for (size_t i = 0; i < tokens.length; i++) {
-        Token token = tokens.items[i];
-        switch (i) {
-        case 0:
-            LOG_ASSERT(strcmp(token.value, "16") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 1:
-            LOG_ASSERT(strcmp(token.value, "-") == 0);
-            LOG_ASSERT(token.type == MINUS);
-            break;
-        case 2:
-            LOG_ASSERT(strcmp(token.value, "12.0") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 3:
-            LOG_ASSERT(strcmp(token.value, "/") == 0);
-            LOG_ASSERT(token.type == DIVIDE);
-            break;
-        case 4:
-            LOG_ASSERT(strcmp(token.value, "2") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 5:
-            LOG_ASSERT(strcmp(token.value, "+") == 0);
-            LOG_ASSERT(token.type == PLUS);
-            break;
-        case 6:
-            LOG_ASSERT(strcmp(token.value, "(") == 0);
-            LOG_ASSERT(token.type == LEFT_PAREN);
-            break;
-        case 7:
-            LOG_ASSERT(strcmp(token.value, "3") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 8:
-            LOG_ASSERT(strcmp(token.value, "*") == 0);
-            LOG_ASSERT(token.type == MULTIPLY);
-            break;
-        case 9:
-            LOG_ASSERT(strcmp(token.value, "2") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 10:
-            LOG_ASSERT(strcmp(token.value, "+") == 0);
-            LOG_ASSERT(token.type == PLUS);
-            break;
-        case 11:
-            LOG_ASSERT(strcmp(token.value, "0.5") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 12:
-            LOG_ASSERT(strcmp(token.value, "+") == 0);
-            LOG_ASSERT(token.type == PLUS);
-            break;
-        case 13:
-            LOG_ASSERT(strcmp(token.value, "0.5") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 14:
-            LOG_ASSERT(strcmp(token.value, ")") == 0);
-            LOG_ASSERT(token.type == RIGHT_PAREN);
-            break;
-        default:
-            UNREACHABLE;
-        }
-    }
+
+    LOG_ASSERT(strcmp(tokenarr_to_string(&tokens),
+                      "16 - 12.0 / 2 + ( 3 * 2 + 0.5 + 0.5 )") == 0);
 
     tokenarr_free(&tokens);
     string = new_string("2.2+44.4-3j*29/3");
@@ -202,33 +138,21 @@ static void test_input_tokenize(void)
     LOG_ASSERT(tokenize_error.char_pos == 10);
 
     LOG_ASSERT(tokens.length == 5);
-    for (size_t i = 0; i < tokens.length; i++) {
-        Token token = tokens.items[i];
-        switch (i) {
-        case 0:
-            LOG_ASSERT(strcmp(token.value, "2.2") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 1:
-            LOG_ASSERT(strcmp(token.value, "+") == 0);
-            LOG_ASSERT(token.type == PLUS);
-            break;
-        case 2:
-            LOG_ASSERT(strcmp(token.value, "44.4") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        case 3:
-            LOG_ASSERT(strcmp(token.value, "-") == 0);
-            LOG_ASSERT(token.type == MINUS);
-            break;
-        case 4:
-            LOG_ASSERT(strcmp(token.value, "3") == 0);
-            LOG_ASSERT(token.type == NUMBER);
-            break;
-        default:
-            UNREACHABLE;
-        }
-    }
+    LOG_ASSERT(strcmp(tokenarr_to_string(&tokens), "2.2 + 44.4 - 3") == 0);
+
+    tokenarr_free(&tokens);
+    string = new_string("3--.3+1.4*(-27/10*-33.333/-17-(1/2^-2))/1.1");
+
+    input_free(&input_stream);
+    input_init(&input_stream, string);
+
+    tokenize_error = input_tokenize(&tokens, &input_stream);
+    LOG_ASSERT(tokenize_error.type == NO_ERROR);
+    LOG_ASSERT(tokenize_error.char_pos == 10);
+
+    LOG_ASSERT(strcmp(tokenarr_to_string(&tokens),
+                      "3 - -.3 + 1.4 * ( -27 / 10 * -33.333 "
+                      "/ -17 - ( 1 / 2 ^ -2 ) ) / 1.1") == 0);
 }
 
 static void test_string_remove_all_whitespace(void)
