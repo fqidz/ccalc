@@ -10,7 +10,8 @@ ARGS = -xc\
 	   -Wno-declaration-after-statement\
 	   -Wno-covered-switch-default\
 	   -Wno-unsafe-buffer-usage\
-	   -Wno-missing-prototypes
+	   -Wno-missing-prototypes\
+	   -Wno-disabled-macro-expansion
 
 out:
 	mkdir ./out

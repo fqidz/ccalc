@@ -24,6 +24,7 @@
         pkgs.gnumake
         pkgs.gdb
         pkgs.glib
+        pkgs.valgrind
 
         pkgs.hyperfine
         pkgs-honggfuzz.honggfuzz

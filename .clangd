@@ -10,6 +10,7 @@ CompileFlags:
     -Wno-covered-switch-default,
     -Wno-unsafe-buffer-usage,
     -Wno-missing-prototypes,
+    -Wno-disabled-macro-expansion,
     # -Wno-switch-enum,
   ]
   Remove: [-W*]
