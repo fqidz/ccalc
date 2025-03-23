@@ -150,6 +150,7 @@ static void test_input_tokenize(void)
     tokenize_error = input_tokenize(&tokens, &input_stream);
     LOG_ASSERT(tokenize_error.type == NO_ERROR);
 
+    printf("%s\n", tokenarr_to_string(&tokens));
     LOG_ASSERT(strcmp(tokenarr_to_string(&tokens),
                       "3 - -.3 + 1.4 * ( -27 / 10 * -33.333 "
                       "/ -17 - ( 1 / 2 ^ -2 ) ) / 1.1") == 0);

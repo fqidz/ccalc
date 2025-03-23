@@ -12,6 +12,7 @@
 
 typedef enum {
     NUMBER,
+    NEGATIVE,
     PLUS,
     MINUS,
     MULTIPLY,
@@ -55,6 +56,8 @@ void tokenarr_append(TokenArr *tokenarr, Token item);
 void tokenarr_free(TokenArr *tokenarr);
 Token tokenarr_pop(TokenArr *tokenarr);
 char *tokenarr_to_string(TokenArr *tokenarr);
+char *tokenarr_to_debug_string(TokenArr *tokenarr);
+char *token_type_to_string(TokenType token_type);
 
 // ---------------------------------------------------------
 

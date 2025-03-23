@@ -16,6 +16,8 @@ int token_type_get_precidence(TokenType token_type)
         return 3;
     case POWER:
         return 4;
+    case NEGATIVE:
+        return 5;
     case LEFT_PAREN:
     case RIGHT_PAREN:
     default:
@@ -41,6 +43,7 @@ bool token_is_right_associative(TokenType token_type)
     case POWER:
         return true;
     case NUMBER:
+    case NEGATIVE:
     case PLUS:
     case MINUS:
     case MULTIPLY:
@@ -119,6 +122,71 @@ char *tokenarr_to_string(TokenArr *tokenarr)
         }
     }
     return string;
+}
+
+char *tokenarr_to_debug_string(TokenArr *tokenarr)
+{
+    char *string = calloc(2, sizeof(char));
+    for (size_t i = 0; i < tokenarr->length; i++) {
+        size_t needed = (size_t)snprintf(
+                                NULL, 0, "%zu:\t\"%s\"\t%s\n", i,
+                                tokenarr->items[i].value,
+                                token_type_to_string(tokenarr->items[i].type)) +
+                        1;
+        char *buffer = malloc(needed);
+        sprintf(buffer, "%zu:\t\"%s\"\t%s\n", i, tokenarr->items[i].value,
+                token_type_to_string(tokenarr->items[i].type));
+        string = realloc(string, strlen(string) + strlen(buffer) + 1);
+        strcat(string, buffer);
+    }
+    return string;
+}
+
+char *token_type_to_string(TokenType token_type)
+{
+    char *buffer;
+    switch (token_type) {
+    case NUMBER:
+        buffer = malloc(7);
+        strcpy(buffer, "NUMBER");
+        break;
+    case NEGATIVE:
+        buffer = malloc(9);
+        strcpy(buffer, "NEGATIVE");
+        break;
+    case PLUS:
+        buffer = malloc(5);
+        strcpy(buffer, "PLUS");
+        break;
+    case MINUS:
+        buffer = malloc(6);
+        strcpy(buffer, "MINUS");
+        break;
+    case MULTIPLY:
+        buffer = malloc(9);
+        strcpy(buffer, "MULTIPLY");
+        break;
+    case DIVIDE:
+        buffer = malloc(7);
+        strcpy(buffer, "DIVIDE");
+        break;
+    case POWER:
+        buffer = malloc(6);
+        strcpy(buffer, "POWER");
+        break;
+    case LEFT_PAREN:
+        buffer = malloc(11);
+        strcpy(buffer, "LEFT_PAREN");
+        break;
+    case RIGHT_PAREN:
+        buffer = malloc(12);
+        strcpy(buffer, "RIGHT_PAREN");
+        break;
+    default:
+        UNREACHABLE;
+    }
+
+    return buffer;
 }
 
 void string_remove_spaces(char *restrict str_trimmed,
@@ -218,10 +286,6 @@ bool is_bracket(char c)
     switch (c) {
     case '(':
     case ')':
-        // case '[':
-        // case ']':
-        // case '{':
-        // case '}':
         return true;
     default:
         return false;
@@ -232,6 +296,7 @@ Error input_read_symbol(TokenArr *tokens, InputStream *input)
 {
     LOG_ASSERT(!input_is_eof(input));
     LOG_ASSERT(is_operator(input_peek(input)));
+    char previous_char;
     char next_char = input_next(input);
 
     Token token = { 0 };
@@ -243,8 +308,14 @@ Error input_read_symbol(TokenArr *tokens, InputStream *input)
     case '+':
         token.type = PLUS;
         break;
-    case '-':
-        token.type = MINUS;
+    case '-':;
+        previous_char = input_peek_nth(input, -1);
+        if (is_operator(previous_char) || previous_char == '\0' ||
+            previous_char == '(') {
+            token.type = NEGATIVE;
+        } else {
+            token.type = MINUS;
+        }
         break;
     case '*':
     case 'x':
@@ -348,17 +419,6 @@ Error input_read_bracket(TokenArr *tokens, InputStream *input)
     };
 }
 
-// neg:
-// -2
-// -(2+3)
-// 2--2
-// -sin(2)
-// 2^-1
-//
-// minus:
-// 2-(3+2)
-// cos(3)-sin(1)
-
 Error input_tokenize(TokenArr *tokens, InputStream *input)
 {
     while (!input_is_eof(input)) {
@@ -367,16 +427,7 @@ Error input_tokenize(TokenArr *tokens, InputStream *input)
         if (is_dot_or_digit(peeked_char)) {
             token_error = input_read_number(tokens, input);
         } else if (is_operator(peeked_char)) {
-            char current_char = input_peek_nth(input, 0);
-            char char_after_peeked = input_peek_nth(input, 2);
-            // treat next char as number if current token is
-            // a symbol, and next char is a '-' followed by a number
-            if (!is_dot_or_digit(current_char) && peeked_char == '-' &&
-                is_dot_or_digit(char_after_peeked)) {
-                token_error = input_read_number(tokens, input);
-            } else {
-                token_error = input_read_symbol(tokens, input);
-            }
+            token_error = input_read_symbol(tokens, input);
         } else if (is_bracket(peeked_char)) {
             token_error = input_read_bracket(tokens, input);
         } else {

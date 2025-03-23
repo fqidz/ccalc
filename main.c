@@ -8,6 +8,8 @@
 #define STRING_SIZE 2000
 
 // TODO: deal with negative cos, sin, e, phi, etc.
+// TODO: give good error for division by zero
+// TODO: (-1)^(1/2) should return NAN
 // TODO: add trigonometric functions
 // TODO: add constants; eg. pi, e
 // TODO: add sqrt, cube root, generic root

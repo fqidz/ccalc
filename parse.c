@@ -21,6 +21,54 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
         case NUMBER:
             tokenarr_append(&output, current_token);
             break;
+            // -1+2
+            // | token | output    | stack
+            // | -     |           | neg
+            // | 1     | 1         | neg
+            // | +     | 1 neg     | +
+            // | 2     | 1 neg 2   | +
+            // | end   | 1 neg 2 + |
+            //
+            // -(1+2)
+            // | token | output    | stack
+            // | -     |           | neg
+            // | (     |           | neg (
+            // | 1     | 1         | neg (
+            // | +     | 1         | neg ( +
+            // | 2     | 1 2       | neg ( +
+            // | )     | 1 2 +     | neg
+            // | end   | 1 2 + neg |
+            //
+            // 2+-3
+            // | token | output    | stack
+            // | 2     | 2         |
+            // | +     | 2         | +
+            // | -     | 2         | + neg
+            // | 3     | 2 3       | + neg
+            // | end   | 2 3 neg + |
+            //
+            // 5+-7*3
+            // | token | output          | stack
+            // | 5     | 5               |
+            // | +     | 5               | +
+            // | -     | 5               | + neg
+            // | 7     | 5 7             | + neg
+            // | *     | 5 7             | + neg *
+            // | 3     | 5 7 3           | + neg *
+            // | end   | 5 7 3 * neg +   |
+            //
+            // 2+-4/-6
+            // | token | output            | stack
+            // | 2     | 2                 |
+            // | +     | 2                 | +
+            // | -     | 2                 | + neg
+            // | 4     | 2 4               | + neg
+            // | /     | 2 4               | + neg /
+            // | -     | 2 4               | + neg / neg
+            // | 6     | 2 4 6             | + neg / neg
+            // | end   | 2 4 6 neg / neg + |
+
+        case NEGATIVE:
         case PLUS:
         case MINUS:
         case MULTIPLY:
@@ -93,7 +141,7 @@ Error evaluate_postfix_tokens(double *result, TokenArr *tokens,
 {
     LOG_ASSERT(tokens->length > 0);
     double *stack = calloc(tokens->length, sizeof(double));
-    int stack_length = 0;
+    size_t stack_length = 0;
     char *endptr;
 
     for (size_t i = 0; i < tokens->length; i++) {
@@ -106,6 +154,9 @@ Error evaluate_postfix_tokens(double *result, TokenArr *tokens,
             LOG_ASSERT(strlen(endptr) == 0);
             stack[stack_length] = string_as_double;
             stack_length++;
+            break;
+        case NEGATIVE:
+            stack[stack_length - 1] *= -1;
             break;
         case PLUS:
         case MINUS:
@@ -141,6 +192,7 @@ Error evaluate_postfix_tokens(double *result, TokenArr *tokens,
                 operation_result = pow(lhs, rhs);
                 break;
             case NUMBER:
+            case NEGATIVE:
             case LEFT_PAREN:
             case RIGHT_PAREN:
             default:
