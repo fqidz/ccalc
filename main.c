@@ -23,9 +23,11 @@ int main(void)
     char *input_string = calloc(STRING_SIZE, sizeof(char));
 
     InputStream input_stream = { 0 };
-    TokenArr tokens = { 0 };
+    TokenArr tokens;
     double result = 0.0;
+    char *result_formatted = NULL;
 
+    tokenarr_init(&tokens, 2);
     printf("<ccalc>\n");
     while (1) {
         printf(">> ");
@@ -65,11 +67,15 @@ int main(void)
             continue;
         }
 
-        printf(" %s\n", double_format_to_string(result));
+        result_formatted = double_format_to_string(result);
+        printf(" %s\n", result_formatted);
 
+        free(result_formatted);
         tokenarr_free(&tokens);
         input_free(&input_stream);
     }
 
-    // return 0;
+    tokenarr_free(&tokens);
+    free(input_string);
+    return 0;
 }

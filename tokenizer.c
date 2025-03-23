@@ -77,8 +77,14 @@ void tokenarr_append(TokenArr *tokenarr, Token item)
 
     if (tokenarr->length >= tokenarr->capacity) {
         tokenarr->capacity *= 2;
-        tokenarr->items =
+        Token *tmp_items =
                 realloc(tokenarr->items, tokenarr->capacity * sizeof(Token));
+        if (!tmp_items) {
+            UNREACHABLE;
+        } else if (tokenarr->items != tmp_items) {
+            tokenarr->items = tmp_items;
+        }
+        tmp_items = NULL;
     }
 
     tokenarr->items[tokenarr->length++] = item;
@@ -104,6 +110,7 @@ void tokenarr_free(TokenArr *tokenarr)
 char *tokenarr_to_string(TokenArr *tokenarr)
 {
     char *string = calloc(2, sizeof(char));
+    char *tmp_string = NULL;
     for (size_t i = 0; i < tokenarr->length; i++) {
         char *current_token_string = tokenarr->items[i].value;
         // add spaces between tokens
@@ -112,12 +119,20 @@ char *tokenarr_to_string(TokenArr *tokenarr)
                     calloc(strlen(current_token_string) + 2, sizeof(char));
             strcpy(new_token_string, " ");
             strcat(new_token_string, current_token_string);
-            string = realloc(string,
-                             strlen(string) + strlen(new_token_string) + 1);
+            tmp_string = realloc(string,
+                                 strlen(string) + strlen(new_token_string) + 1);
+            if (!tmp_string) {
+                UNREACHABLE;
+            }
+            string = tmp_string;
             strcat(string, new_token_string);
         } else {
-            string = realloc(string,
-                             strlen(string) + strlen(current_token_string) + 1);
+            tmp_string = realloc(
+                    string, strlen(string) + strlen(current_token_string) + 1);
+            if (!tmp_string) {
+                UNREACHABLE;
+            }
+            string = tmp_string;
             strcat(string, current_token_string);
         }
     }
@@ -127,6 +142,7 @@ char *tokenarr_to_string(TokenArr *tokenarr)
 char *tokenarr_to_debug_string(TokenArr *tokenarr)
 {
     char *string = calloc(2, sizeof(char));
+    char *tmp_string = NULL;
     for (size_t i = 0; i < tokenarr->length; i++) {
         size_t needed = (size_t)snprintf(
                                 NULL, 0, "%zu:\t\"%s\"\t%s\n", i,
@@ -136,7 +152,12 @@ char *tokenarr_to_debug_string(TokenArr *tokenarr)
         char *buffer = malloc(needed);
         sprintf(buffer, "%zu:\t\"%s\"\t%s\n", i, tokenarr->items[i].value,
                 token_type_to_string(tokenarr->items[i].type));
-        string = realloc(string, strlen(string) + strlen(buffer) + 1);
+        tmp_string = realloc(string, strlen(string) + strlen(buffer) + 1);
+        if (!tmp_string || tmp_string == NULL) {
+            UNREACHABLE;
+        }
+        string = tmp_string;
+        tmp_string = NULL;
         strcat(string, buffer);
     }
     return string;
@@ -216,6 +237,7 @@ void string_append_char(char **string, char c)
     strcat(tmp, c_as_string);
     free(c_as_string);
     *string = tmp;
+    tmp = NULL;
 }
 
 void input_free(InputStream *input)
@@ -345,17 +367,12 @@ Error input_read_symbol(TokenArr *tokens, InputStream *input)
 Error input_read_number(TokenArr *tokens, InputStream *input)
 {
     LOG_ASSERT(!input_is_eof(input));
-    char peeked_char = input_peek(input);
-    LOG_ASSERT(is_dot_or_digit(peeked_char) || peeked_char == '-');
+    LOG_ASSERT(is_dot_or_digit(input_peek(input)));
 
     Token token = { 0 };
     token.value = calloc(2, sizeof(char));
     token.pos = input->pos;
     token.type = NUMBER;
-
-    if (peeked_char == '-') {
-        string_append_char(&token.value, input_next(input));
-    }
 
     bool has_dot = false;
     while (!input_is_eof(input)) {

@@ -48,6 +48,7 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
         case RIGHT_PAREN:
             brackets_count--;
             if (brackets_count < 0) {
+                tokenarr_free(&output);
                 return (Error){
                     .type = EXTRA_BRACKET,
                     .char_pos = current_token.pos,
@@ -69,6 +70,7 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
     }
 
     if (brackets_count != 0) {
+        tokenarr_free(&output);
         return (Error){
             .type = EXTRA_BRACKET,
             .char_pos = last_left_paren_pos,
@@ -80,6 +82,7 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
         tokenarr_append(&output, tokenarr_pop(&stack));
     }
 
+    // tokenarr_free(tokens);
     *tokens = output;
 
     return (Error){
@@ -95,7 +98,7 @@ Error evaluate_postfix_tokens(double *result, TokenArr *tokens,
     LOG_ASSERT(tokens->length > 0);
     double *stack = calloc(tokens->length, sizeof(double));
     size_t stack_length = 0;
-    char *endptr;
+    char *endptr = NULL;
 
     for (size_t i = 0; i < tokens->length; i++) {
         Token token = tokens->items[i];
@@ -165,6 +168,10 @@ Error evaluate_postfix_tokens(double *result, TokenArr *tokens,
     LOG_ASSERT(stack_length == 1);
 
     *result = stack[0];
+
+    // free(endptr);
+    free(stack);
+
     return (Error){
         .type = NO_ERROR,
         .input_string = NULL,
@@ -177,28 +184,28 @@ int double_get_decimal_length(double input, int max_len)
     double _integrand;
     double fractional = fabs(modf(input, &_integrand));
     size_t needed = (size_t)snprintf(NULL, 0, "%.*f", max_len, fractional) + 1;
-    size_t first_non_zero_index = 0;
+    size_t non_zero_index = 0;
     char *buffer = malloc(needed);
     sprintf(buffer, "%.*f", max_len, fractional);
-    // start after decimal
+    // start from the left, after decimal
     for (size_t i = 2; i < strlen(buffer); i++) {
         if (buffer[i] != '0') {
-            first_non_zero_index = i;
+            non_zero_index = i;
             break;
         }
     }
 
-    // start from the end
-    for (size_t i = strlen(buffer) - 1; i > first_non_zero_index; i--) {
+    // then, start from the right
+    for (size_t i = strlen(buffer) - 1; i > non_zero_index; i--) {
         if (buffer[i] != '0') {
-            return (int)i - 1;
+            non_zero_index = i;
+            break;
         }
     }
 
     free(buffer);
-
-    LOG_ASSERT(first_non_zero_index > 0);
-    return (int)first_non_zero_index - 1;
+    LOG_ASSERT(non_zero_index > 0);
+    return (int)non_zero_index - 1;
 }
 
 double double_get_scientific_notation(double input, int *exponent)

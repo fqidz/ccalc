@@ -1,5 +1,5 @@
-# CC = clang
-CC = hfuzz-cc
+CC = clang
+# CC = hfuzz-cc
 ARGS = -xc\
 	   -std=c99\
 	   -ggdb3\
