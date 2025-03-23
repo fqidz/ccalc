@@ -2,7 +2,7 @@
 CC = hfuzz-cc
 ARGS = -xc\
 	   -std=c99\
-	   -g\
+	   -ggdb3\
 	   -Weverything\
 	   -Werror\
 	   -Wno-used-but-marked-unused\

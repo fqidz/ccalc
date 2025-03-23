@@ -214,6 +214,7 @@ void string_append_char(char **string, char c)
     }
 
     strcat(tmp, c_as_string);
+    free(c_as_string);
     *string = tmp;
 }
 
@@ -227,7 +228,7 @@ void input_free(InputStream *input)
 void input_init(InputStream *input, char *string)
 {
     LOG_ASSERT(strlen(string) > 0);
-    char *trimmed_string = malloc(strlen(string) + 1 * sizeof(char));
+    char *trimmed_string = malloc((strlen(string) + 1) * sizeof(char));
     string_remove_spaces(trimmed_string, string);
     input->string = trimmed_string;
     input->length = strlen(trimmed_string);

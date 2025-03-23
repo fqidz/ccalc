@@ -22,6 +22,10 @@ int main(void)
 {
     char *input_string = calloc(STRING_SIZE, sizeof(char));
 
+    InputStream input_stream = { 0 };
+    TokenArr tokens = { 0 };
+    double result = 0.0;
+
     printf("<ccalc>\n");
     while (1) {
         printf(">> ");
@@ -40,10 +44,8 @@ int main(void)
             continue;
         }
 
-        InputStream input_stream = { 0 };
         input_init(&input_stream, input_string);
 
-        TokenArr tokens = { 0 };
         Error tokenize_error = input_tokenize(&tokens, &input_stream);
         if (tokenize_error.type != NO_ERROR) {
             fprintf(stderr, "%s\n", error_to_string(tokenize_error));
@@ -56,7 +58,6 @@ int main(void)
             continue;
         }
 
-        double result = 0.0;
         Error evaluate_error =
                 evaluate_postfix_tokens(&result, &tokens, input_stream.string);
         if (evaluate_error.type != NO_ERROR) {
@@ -65,6 +66,9 @@ int main(void)
         }
 
         printf(" %s\n", double_format_to_string(result));
+
+        tokenarr_free(&tokens);
+        input_free(&input_stream);
     }
 
     // return 0;

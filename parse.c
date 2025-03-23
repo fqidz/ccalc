@@ -195,6 +195,8 @@ int double_get_decimal_length(double input, int max_len)
         }
     }
 
+    free(buffer);
+
     LOG_ASSERT(first_non_zero_index > 0);
     return (int)first_non_zero_index - 1;
 }
