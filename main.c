@@ -27,7 +27,7 @@ int main(void)
     double result = 0.0;
     char *result_formatted = NULL;
 
-    tokenarr_init(&tokens, 2);
+    tokenarr_init(&tokens, 1);
     printf("<ccalc>\n");
     while (1) {
         printf(">> ");
@@ -48,24 +48,34 @@ int main(void)
 
         input_init(&input_stream, input_string);
 
+        // printf("first:\n%s\n", tokenarr_to_debug_string(&tokens));
         Error tokenize_error = input_tokenize(&tokens, &input_stream);
         if (tokenize_error.type != NO_ERROR) {
             fprintf(stderr, "%s\n", error_to_string(tokenize_error));
+            tokenarr_free(&tokens);
+            input_free(&input_stream);
             continue;
         }
 
+        // printf("second:\n%s\n", tokenarr_to_debug_string(&tokens));
         Error postfix_error = tokens_to_postfix(&tokens, input_stream.string);
         if (postfix_error.type != NO_ERROR) {
             fprintf(stderr, "%s\n", error_to_string(postfix_error));
+            tokenarr_free(&tokens);
+            input_free(&input_stream);
             continue;
         }
 
+        // printf("third:\n%s\n", tokenarr_to_debug_string(&tokens));
         Error evaluate_error =
                 evaluate_postfix_tokens(&result, &tokens, input_stream.string);
         if (evaluate_error.type != NO_ERROR) {
             fprintf(stderr, "%s\n", error_to_string(evaluate_error));
+            tokenarr_free(&tokens);
+            input_free(&input_stream);
             continue;
         }
+        // printf("fourth:\n%s\n", tokenarr_to_debug_string(&tokens));
 
         result_formatted = double_format_to_string(result);
         printf(" %s\n", result_formatted);

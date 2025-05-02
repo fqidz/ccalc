@@ -82,7 +82,7 @@ Error tokens_to_postfix(TokenArr *tokens, char *input_string)
         tokenarr_append(&output, tokenarr_pop(&stack));
     }
 
-    // tokenarr_free(tokens);
+    // tokenarr_free(&stack);
     *tokens = output;
 
     return (Error){

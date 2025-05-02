@@ -67,6 +67,7 @@ void tokenarr_init(TokenArr *tokenarr, size_t capacity)
 void token_free(Token *token)
 {
     free(token->value);
+    token = NULL;
 }
 
 void tokenarr_append(TokenArr *tokenarr, Token item)
